@@ -33,7 +33,25 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     */
     @Override
     public List<Group> findConnectedGroups(int[][] image) {
-        return null;
+       int[]start = 
     }
     
+    //Movement
+    int[][] moves = {
+        {-1, 0}, //Up
+        {1, 0}, //Down
+        {0, 1}, //Right
+        {0, -1} //Left
+    };
+
+    //Tracker of locations visited
+    for (int[] move : moves) {
+        int newRow = r + move[0];
+        int newCol = c + move[1];
+        count += /* parameters and such that goes here. new int[]{newRow, newCol}, visited); */
+    }
+    return count;
+
+
+
 }
