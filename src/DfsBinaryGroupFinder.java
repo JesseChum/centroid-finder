@@ -31,9 +31,10 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     * @param image a rectangular 2D array containing only 1s and 0s
     * @return the found groups of connected pixels in descending order
     */
+
+    /*Creating rough draft of code */
     @Override
     public List<Group> findConnectedGroups(int[][] image) {
-       int[]start = 
     }
     
     //Movement
@@ -52,6 +53,15 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     }
     return count;
 
-
+    //Recursion through all possible ways
+    private static int[] searchLocation(int[][] island) {
+        for (int r = 0; r < island.length; r++) {
+            for (int c = 0; c < island[0].length; c++) {
+                if (island[r][c] == 0) {
+                    return new int[]{r, c};
+                }
+            }
+        }
+    }
 
 }
