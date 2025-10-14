@@ -33,25 +33,41 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     * @return the found groups of connected pixels in descending order
     */
 
-    /*Creating rough draft of code */
+    // SO
+    // This bad boy will check the initial array. Check if its okay or not to use.
+    // If it is, the intention is for it to go through the whole array, looking for '1's.
+    // a '1' represents a color match.
+    // if we find a 1, we want to make sure we find all the '1's attached to it, which is done by
+    // searchLocation. This is called a 'group'
+    // findConnectedGroups's whole job is to simply put together all the groups into a bigger list.
     @Override
     public List<Group> findConnectedGroups(int[][] image) {
         if(image == null) throw new NullPointerException("Image array provided is NULL");
         if(image.length == 0) throw new IllegalArgumentException("Image array is is 0 in X direction");
         if(image[0].length == 0) throw new IllegalArgumentException("Image array is is 0 in Y direction");
         // declare visited set - empty at first.
+        // declare a list of groups - empty at first
         // for loop through the int[]
             // for loop through the int[][]
-                // if is '1'
+                // if is '1' - we've entered a group
                     // enter recursive function - Niko
+                    // we are returned a group
+                    // we put that group in a list
+                // if it is '0' we do nothing
+            // for loop ends
+        // for loop ends
+        // we return a list of groups 
     }
 
-    // Recursion through all possible ways
-    // need to figure out what to return, for now, null - Niko
+    // We could probably do a few things here
+    // First, we could calculate The 'center' pixel both through X and Y using some averaging somehow
+    // We could also track the size of the group by increasing it each valid move
+    // then, we return the group as a whole - Niko
     private static void searchLocation(int[][] image, int x, int y, HashSet<List<Integer>> visited) {
         // if out of bounds, return 
         // if already visited, return
-
+        // if valid, we add to the visited set
+        
         // probably swap with coordinates? - Niko
         int[][] moves = {
             {-1, 0}, //Up
@@ -64,8 +80,6 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
             // run searchLocation with the new coordinate
     }
 
-    // this will give us visited set (List? group?)
-    // 
 
 
     
