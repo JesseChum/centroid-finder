@@ -85,11 +85,15 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     // We could also track the size of the group by increasing it each valid move
     // then, we return the group as a whole - Niko
     private static void searchLocation(int[][] image, int x, int y, HashSet<> visited) {
-        // if out of bounds, return 
-        // if already visited, return
+        int x = startingCoordinate.x();
+        int y = startingCoordinate.y();
+        // if in valid, return.
+        if(x < 0 || y < 0 || x >= image.length || y >= image[x].length) return;
+        if(visitedTemp.contains(startingCoordinate)) return;
         // if valid, we add to the visited set
+        visitedTemp.add(startingCoordinate);
+        visitedGlobal.add(startingCoordinate);
         
-        // probably swap with coordinates? - Niko
         int[][] moves = {
             {-1, 0}, //Up
             {1, 0}, //Down
@@ -97,14 +101,9 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
             {0, -1} //Left
         };
 
-        // track size somehow.
-        // at the end, we need to just do visited.size - we will get the total amount of pixels
-        // in the same group.
-        // track average position somehow.
-        // using our visited set, we can add up all the pixels visited in one group.
-        // then take the average value.
-
-        // For every movement
+        for (int[] move : moves) {
+            
+        }
             // run searchLocation with the new coordinate
     }
 
