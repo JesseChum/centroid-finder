@@ -76,6 +76,9 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
             {0, -1} //Left
         };
 
+        // track size somehow.
+        // track average somehow.
+
         // For every movement
             // run searchLocation with the new coordinate
     }
@@ -85,8 +88,7 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     
 
 
-    //Tracker of locations visited
-    // Visited Set - left empty at start. - Niko
+    // Not sure below is necessary.
 
     for (int[] move : moves) {
         int newRow = r + move[0];
