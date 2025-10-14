@@ -46,12 +46,17 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
         if(image.length == 0) throw new IllegalArgumentException("Image array is is 0 in X direction");
         if(image[0].length == 0) throw new IllegalArgumentException("Image array is is 0 in Y direction");
         // declare a list of groups - empty when we start.
+        // declare GlobalVisited set - empty when we start.
         // for loop through the int[]
             // for loop through the int[][]
                 // if is '1' - we've entered a group
-                    // declare visited set - empty when we find a new group.
+                    // declare a TempVisited set - empty when we find a new group.
                     // enter recursive function - Niko
-                    // we are returned a group
+                    // BOTH sets is updated
+                    // we count the size of visited
+                    // we take the average of all visited pixels
+                       // Create an average Coordinate
+                    // we make a group
                     // we put that group in a list
                 // if it is '0' we do nothing
             // for loop ends
@@ -63,7 +68,7 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     // First, we could calculate The 'center' pixel both through X and Y using some averaging somehow
     // We could also track the size of the group by increasing it each valid move
     // then, we return the group as a whole - Niko
-    private static void searchLocation(int[][] image, int x, int y, HashSet<> visited) {
+    private static void searchLocation(int[][] image, int x, int y, HashSet<Coordinate> visited) {
         // if out of bounds, return 
         // if already visited, return
         // if valid, we add to the visited set
@@ -76,15 +81,12 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
             {0, -1} //Left
         };
 
-        // track size somehow.
-        // at the end, we need to just do visited.size - we will get the total amount of pixels
-        // in the same group.
-        // track average position somehow.
-        // using our visited set, we can add up all the pixels visited in one group.
-        // then take the average value.
-
         // For every movement
             // run searchLocation with the new coordinate
+    }
+
+    private static Group findCenter(int[][] image, int x, int y, HashSet<Coordinate> visited){
+
     }
 
 
