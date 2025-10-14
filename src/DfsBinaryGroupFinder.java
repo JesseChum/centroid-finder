@@ -1,3 +1,4 @@
+import java.util.HashSet;
 import java.util.List;
 
 public class DfsBinaryGroupFinder implements BinaryGroupFinder {
@@ -35,33 +36,51 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     /*Creating rough draft of code */
     @Override
     public List<Group> findConnectedGroups(int[][] image) {
+        if(image == null) throw new NullPointerException("Image array provided is NULL");
+        if(image.length == 0) throw new IllegalArgumentException("Image array is is 0 in X direction");
+        if(image[0].length == 0) throw new IllegalArgumentException("Image array is is 0 in Y direction");
+        // declare visited set - empty at first.
+        // for loop through the int[]
+            // for loop through the int[][]
+                // if is '1'
+                    // enter recursive function - Niko
     }
+
+    // Recursion through all possible ways
+    // need to figure out what to return, for now, null - Niko
+    private static void searchLocation(int[][] image, int x, int y, HashSet<List<Integer>> visited) {
+        // if out of bounds, return 
+        // if already visited, return
+
+        // probably swap with coordinates? - Niko
+        int[][] moves = {
+            {-1, 0}, //Up
+            {1, 0}, //Down
+            {0, 1}, //Right
+            {0, -1} //Left
+        };
+
+        // For every movement
+            // run searchLocation with the new coordinate
+    }
+
+    // this will give us visited set (List? group?)
+    // 
+
+
     
-    //Movement
-    int[][] moves = {
-        {-1, 0}, //Up
-        {1, 0}, //Down
-        {0, 1}, //Right
-        {0, -1} //Left
-    };
+
 
     //Tracker of locations visited
+    // Visited Set - left empty at start. - Niko
+
     for (int[] move : moves) {
         int newRow = r + move[0];
         int newCol = c + move[1];
         count += /* parameters and such that goes here. new int[]{newRow, newCol}, visited); */
     }
+    // IDK why return count? The thing we do here is than run searchLocation, no?
     return count;
 
-    //Recursion through all possible ways
-    private static int[] searchLocation(int[][] island) {
-        for (int r = 0; r < island.length; r++) {
-            for (int c = 0; c < island[0].length; c++) {
-                if (island[r][c] == 0) {
-                    return new int[]{r, c};
-                }
-            }
-        }
-    }
 
 }
