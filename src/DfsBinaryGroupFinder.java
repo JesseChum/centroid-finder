@@ -46,29 +46,45 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
         if(image.length == 0) throw new IllegalArgumentException("Image array is is 0 in X direction");
         if(image[0].length == 0) throw new IllegalArgumentException("Image array is is 0 in Y direction");
         // declare a list of groups - empty when we start.
-        // declare GlobalVisited set - empty when we start.
+        // global set - empty when we start
+        Set<Coordinate> global = new HashSet<>();
+        List<Group> emptyList = new ArrayList<>();
         // for loop through the int[]
-            // for loop through the int[][]
-                // if is '1' - we've entered a group
-                    // declare a TempVisited set - empty when we find a new group.
+        for (int i = 0; i < image.length; i++){
+        // for loop through the int[][] (double loop)
+         for (int j = 0; j < image[i].length; j++){
+            // if is '1' - we've entered a group
+            if( image[i][j] == 1);
+            // declare visited set - empty when we find a new group.
+            Set<Coordinate> coordinate = new HashSet<>();
                     // enter recursive function - Niko
-                    // BOTH sets is updated
-                    // we count the size of visited
-                    // we take the average of all visited pixels
-                       // Create an average Coordinate
-                    // we make a group
+            searchLocation(image, i, j, coordinate);        
+                    // we are returned a group
+                int[] = coordinate.size;
                     // we put that group in a list
+                int x;
+                int y;
+
+                for (coor temp : set)
+               int x += temp.x()
+               int y += temp.y()
+               int x = x / visited;
+               int y = y / visited;
                 // if it is '0' we do nothing
             // for loop ends
+             }
         // for loop ends
+            }
         // we return a list of groups 
-    }
+        return emptyList;
+        }
+
 
     // We could probably do a few things here
     // First, we could calculate The 'center' pixel both through X and Y using some averaging somehow
     // We could also track the size of the group by increasing it each valid move
     // then, we return the group as a whole - Niko
-    private static void searchLocation(int[][] image, int x, int y, HashSet<Coordinate> visited) {
+    private static void searchLocation(int[][] image, int x, int y, HashSet<> visited) {
         // if out of bounds, return 
         // if already visited, return
         // if valid, we add to the visited set
@@ -81,12 +97,15 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
             {0, -1} //Left
         };
 
+        // track size somehow.
+        // at the end, we need to just do visited.size - we will get the total amount of pixels
+        // in the same group.
+        // track average position somehow.
+        // using our visited set, we can add up all the pixels visited in one group.
+        // then take the average value.
+
         // For every movement
             // run searchLocation with the new coordinate
-    }
-
-    private static Group findCenter(int[][] image, int x, int y, HashSet<Coordinate> visited){
-
     }
 
 
