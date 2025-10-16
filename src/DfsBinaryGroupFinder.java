@@ -1,5 +1,6 @@
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 
 public class DfsBinaryGroupFinder implements BinaryGroupFinder {
    /**
@@ -57,7 +58,7 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
             if( image[i][j] == 1);
             // declare visited set - empty when we find a new group.
             HashSet<Coordinate> visitedCur = new HashSet<>();
-            Coordinate cur = new Coordinate(i, j)
+            Coordinate cur = new Coordinate(i, j);
             // enter recursive function - Niko
             searchLocation(image, cur, visitedCur, visitedGlobal);        
             // we are returned a group
@@ -71,11 +72,13 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
                x = x / groupSize;
                y = y / groupSize;
             }
-            // if it is '0' we do nothing
+            Coordinate center = new Coordinate(x,y);
+            Group foundGroup = new Group(groupSize, center);
+            returnable.add(foundGroup);
             // for loop ends
-             }
+        }
         // for loop ends
-            }
+        }
         // we return a list of groups 
         return returnable;
         }
