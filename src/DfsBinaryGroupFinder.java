@@ -110,21 +110,4 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
         }
             // run searchLocation with the new coordinate
     }
-
-
-
-    
-
-
-    // Not sure below is necessary.
-
-    for (int[] move : moves) {
-        int newRow = r + move[0];
-        int newCol = c + move[1];
-        count += /* parameters and such that goes here. new int[]{newRow, newCol}, visited); */
-    }
-    // IDK why return count? The thing we do here is than run searchLocation, no?
-    return count;
-
-
 }
