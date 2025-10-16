@@ -19,8 +19,10 @@ public class DfsBinaryTests {
         Coordinate center = new Coordinate(1, 1);
         Group expectedGroup = new Group(9, center);
         List<Group> expectedList = new ArrayList<Group>();
-        List<Group> actual = DfsBinaryGroupFinder.findConnectedGroups(image);
         expectedList.add(expectedGroup);
+        DfsBinaryGroupFinder finder = new DfsBinaryGroupFinder();
+        List<Group> actualList = finder.findConnectedGroups(image);
+        assertEquals(expectedList, actualList);
     }
     
 }
