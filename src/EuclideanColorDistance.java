@@ -35,6 +35,23 @@ public class EuclideanColorDistance implements ColorDistanceFinder {
     int b1 = (colorA & 0x0000FF);
     int b2 = (colorB & 0x0000FF);
 
-     return (Math.sqrt((r1 - r2)^2 + (g1 - g2)^2 + (b1 - b2)^2));
+      
+    // int r1 =  (colorA >> 16) & 0xFF0000 ;
+    // int r2  = (colorB >> 16) & 0xFF0000;
+
+    // int g1 = (colorA >> 8) & 0x00FF00;
+    // int g2 = (colorB >> 8) & 0x00FF00;
+
+    // int b1 = (colorA) & 0x0000FF;
+    // int b2 = (colorB) & 0x0000FF;
+
+    double subRed = (r1 - r2);
+    double subGreen = (g1 - g2);
+    double subBlue = (b1 - b2);
+        
+
+    double distance = (Math.sqrt(Math.pow((subRed), 2.0) + Math.pow((subGreen), 2.0) + Math.pow((subBlue), 2.0)));
+
+    return distance;
     }
 }
