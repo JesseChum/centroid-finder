@@ -45,6 +45,14 @@ public class DistanceImageBinarizer implements ImageBinarizer {
      */
     @Override
     public int[][] toBinaryArray(BufferedImage image) {
+        //get the image height
+        //get the image width
+        //set an integer 2D array to new array
+        //loop through the height and width? (rows and columns?)
+        //setting color to the images?
+        //returning 1
+        //returing 0
+        //return function?
         return null;
     }
 
@@ -58,6 +66,12 @@ public class DistanceImageBinarizer implements ImageBinarizer {
      */
     @Override
     public BufferedImage toBufferedImage(int[][] image) {
+        // get the image height
+        // get the imade length
+        //look at that formula in wave4
+        //loop through the height and width? (rows and columns?)
+        //do something to make one image or the other 1 or 0?
+        //return the function?
         return null;
     }
 }
