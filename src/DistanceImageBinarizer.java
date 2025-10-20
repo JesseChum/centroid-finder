@@ -47,13 +47,24 @@ public class DistanceImageBinarizer implements ImageBinarizer {
     public int[][] toBinaryArray(BufferedImage image) {
         //get the image height
         //get the image width
+        int[][] result = new int[image.getWidth()][image.getHeight()];
         //set an integer 2D array to new array
         //loop through the height and width? (rows and columns?)
-        //setting color to the images?
+        for(int r = 0; r < height; r++){
+            for(int c = 0; c < width; c++){
+                //setting color to the images?
+                int imageColor = (image.getRGB(r, c) & //mask >>16? or the color);
+            }
+            if(image[r][c] == 1){
+                else{
+                    image[r][c] = 0;
+                }
+            }
+        }
         //returning 1
         //returing 0
         //return function?
-        return null;
+        return result;
     }
 
     /**
@@ -67,9 +78,11 @@ public class DistanceImageBinarizer implements ImageBinarizer {
     @Override
     public BufferedImage toBufferedImage(int[][] image) {
         // get the image height
-        // get the imade length
+        // get the image length
         //look at that formula in wave4
+        //new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         //loop through the height and width? (rows and columns?)
+        
         //do something to make one image or the other 1 or 0?
         //return the function?
         return null;
