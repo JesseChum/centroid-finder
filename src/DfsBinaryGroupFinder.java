@@ -49,32 +49,32 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
         List<Group> returnable = new ArrayList<Group>();
         // for loop through the int[]
         for (int i = 0; i < image.length; i++){
-            // for loop through the int[][] (double loop)
-            for (int j = 0; j < image[i].length; j++){
-                // Coordinate stores (x: column, y: row)
-                Coordinate checkerCoordinate = new Coordinate(j, i);
-                // if is '1' - we've entered a group. Check if we've been here.
-                if (image[i][j] == 1 && !visitedGlobal.contains(checkerCoordinate)) {
-                    // declare visited set - empty when we find a new group.
-                    HashSet<Coordinate> visitedCur = new HashSet<>();
-                    Coordinate cur = new Coordinate(j, i);
-                    // enter recursive function
-                    searchLocation(image, cur, visitedCur, visitedGlobal);
-                    // we are returned a group
-                    int groupSize = visitedCur.size();
-                    int x = 0;
-                    int y = 0;
-                    for (Coordinate temp : visitedCur){
-                       x += temp.x();
-                       y += temp.y();
-                    }
-                    x = x / groupSize;
-                    y = y / groupSize;
-                    Coordinate center = new Coordinate(x,y);
-                    Group foundGroup = new Group(groupSize, center);
-                    returnable.add(foundGroup);
-                }
+        // for loop through the int[][] (double loop)
+         for (int j = 0; j < image[i].length; j++){
+            // if is '1' - we've entered a group
+            if( image[i][j] == 1);
+            // declare visited set - empty when we find a new group.
+            HashSet<Coordinate> visitedCur = new HashSet<>();
+            Coordinate cur = new Coordinate(i, j);
+            // enter recursive function - Niko
+            searchLocation(image, cur, visitedCur, visitedGlobal);        
+            // we are returned a group
+            int groupSize = visitedCur.size();
+            // we put that group in a list
+            int x = 0;
+            int y = 0;
+            for (Coordinate temp : visitedCur){
+               x += temp.x();
+               y += temp.y();
+               x = x / groupSize;
+               y = y / groupSize;
             }
+            Coordinate center = new Coordinate(x,y);
+            Group foundGroup = new Group(groupSize, center);
+            returnable.add(foundGroup);
+            // for loop ends
+        }
+        // for loop ends
         }
         // we return a list of groups 
         return returnable;
@@ -85,30 +85,26 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     // First, we could calculate The 'center' pixel both through X and Y using some averaging somehow
     // We could also track the size of the group by increasing it each valid move
     // then, we return the group as a whole - Niko
-    private static void searchLocation(int[][] image, Coordinate startingCoordinate, HashSet<Coordinate> visitedCur, HashSet<Coordinate> visitedGlobal) {
+    private static void searchLocation(int[][] image, Coordinate startingCoordinate, HashSet<Coordinate> visitedTemp, HashSet<Coordinate> visitedGlobal) {
         int x = startingCoordinate.x();
         int y = startingCoordinate.y();
-        // if invalid, return.
-        if (y < 0 || x < 0 || y >= image.length || x >= image[y].length || image[y][x] != 1) return;
-        if (visitedCur.contains(startingCoordinate)) return;
-        // if valid, add to sets
-        visitedCur.add(startingCoordinate);
+        // if in valid, return.
+        if(x < 0 || y < 0 || x >= image.length || y >= image[x].length) return;
+        if(visitedTemp.contains(startingCoordinate)) return;
+        // if valid, we add to the visited set
+        visitedTemp.add(startingCoordinate);
         visitedGlobal.add(startingCoordinate);
         
         int[][] moves = {
-            {-1, 0}, // left
-            {1, 0},  // right
-            {0, -1}, // up
-            {0, 1}   // down
+            {-1, 0}, //Up
+            {1, 0}, //Down
+            {0, 1}, //Right
+            {0, -1} //Left
         };
 
         for (int[] move : moves) {
-            int xTemp = x;
-            int yTemp = y;
-            xTemp += move[0];
-            yTemp += move[1];
-            Coordinate recursiveCoordinate = new Coordinate(xTemp, yTemp);
-            searchLocation(image, recursiveCoordinate, visitedCur, visitedGlobal);
+            
         }
+            // run searchLocation with the new coordinate
     }
 }
