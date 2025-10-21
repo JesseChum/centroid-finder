@@ -87,7 +87,7 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     // We could also track the size of the group by increasing it each valid move
     // then, we return the group as a whole - Niko
     private static void searchLocation(int[][] image, Coordinate startingCoordinate, HashSet<Coordinate> visitedTemp, HashSet<Coordinate> visitedGlobal) {       
-        Deque<Coordinate> q = new ArrayDeque<>();
+ Deque<Coordinate> q = new ArrayDeque<>();
         q.push(startingCoordinate);
 
        int[][] moves = {
@@ -97,14 +97,14 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
             {1, 0}   
         };
 
-        while(!q.isEmpty()){
+        while (!q.isEmpty()) {
             Coordinate cur = q.pop();
             int x = cur.x();
             int y = cur.y();
 
-            if(y > 0 || x > 0 || y <= image.length || x <= image[y].length) return;
-            if(visitedTemp.contains(cur) || visitedGlobal.contains(cur)) return;
-            if(image[y][x] != 1) return;
+            if (y < 0 || x < 0 || x >= image[y].length || y >= image.length) continue;  
+            if (visitedTemp.contains(cur) || visitedGlobal.contains(cur)) continue;
+            if (image[y][x] != 1) continue;
 
             visitedTemp.add(cur);
             visitedGlobal.add(cur);
