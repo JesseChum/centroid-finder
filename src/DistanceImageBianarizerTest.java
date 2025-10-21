@@ -88,4 +88,58 @@ public class DistanceImageBianarizerTest {
         }
     }
 
+    //TESTS FOR THE BUFFEREDIMAGE SECOND PART OF THE FILE
+
+    private final DistanceImageBinarizer binarizer = 
+    new DistanceImageBinarizer(null, 0, 0); 
+        
+
+    @Test
+    public void testSingleWhitePixel() {
+        int[][] input = { {1} };
+        BufferedImage result = binarizer.toBufferedImage(input);
+
+        assertEquals(0xFFFFFF, result.getRGB(0, 0) & 0xFFFFFF);
+    }
+
+    @Test
+    public void testSingleBlackPixel() {
+        int[][] input = { {0} };
+        BufferedImage result = binarizer.toBufferedImage(input);
+
+        assertEquals(0x000000, result.getRGB(0, 0) & 0xFFFFFF);
+    }
+
+    @Test
+    public void test2x2MixedImage() {
+        int[][] input = {
+            {1, 0},
+            {0, 1}
+        };
+
+        BufferedImage result = binarizer.toBufferedImage(input);
+
+        // Top-left (1) → white
+        assertEquals(0xFFFFFF, result.getRGB(0, 0) & 0xFFFFFF);
+        // Top-right (0) → black
+        assertEquals(0x000000, result.getRGB(1, 0) & 0xFFFFFF);
+        // Bottom-left (0) → black
+        assertEquals(0x000000, result.getRGB(0, 1) & 0xFFFFFF);
+        // Bottom-right (1) → white
+        assertEquals(0xFFFFFF, result.getRGB(1, 1) & 0xFFFFFF);
+    }
+
+    @Test
+    public void testDimensionsMatchInputArray() {
+        int[][] input = {
+            {1, 1, 0},
+            {0, 1, 0}
+        };
+
+        BufferedImage result = binarizer.toBufferedImage(input);
+
+        assertEquals(3, result.getWidth());
+        assertEquals(2, result.getHeight());
+    }
+
 }
