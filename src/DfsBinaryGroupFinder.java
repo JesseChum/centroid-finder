@@ -80,9 +80,9 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     // First, we could calculate The 'center' pixel both through X and Y using some averaging somehow
     // We could also track the size of the group by increasing it each valid move
     // then, we return the group as a whole - Niko
-    private static void searchLocation(int[][] image, Coordinate startingCoordinate, HashSet<Coordinate> visitedTemp, HashSet<Coordinate> visitedGlobal) {
-       // Make a queue
-       // put into queue 
+    private static void searchLocation(int[][] image, Coordinate startingCoordinate, HashSet<Coordinate> visitedTemp, HashSet<Coordinate> visitedGlobal) {       
+        Deque<Coordinate> q = new ArrayDeque<>();
+        q.push(startingCoordinate);
 
        int[][] moves = {
             {0, -1}, 
@@ -91,13 +91,23 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
             {1, 0}   
         };
 
-        // while the stack is not empty
-            // pop the coordinate
-            // x and y
-            // check the bounds
-            // check if visited
-            // check if '1'
-            // mark as visited
-            // push neighbors into stack
+        while(!q.isEmpty()){
+            Coordinate cur = q.pop();
+            int x = cur.x();
+            int y = cur.y();
+
+            if(y > 0 || x > 0 || y <= image.length || x <= image[y].length) return;
+            if(visitedTemp.contains(cur) || visitedGlobal.contains(cur)) return;
+            if(image[y][x] != 1) return;
+
+            visitedTemp.add(cur);
+            visitedGlobal.add(cur);
+
+            for (int[] move : moves) {
+                int tempX = x + move[0];
+                int tempY = y + move[1];
+                q.push(new Coordinate(tempX, tempY));
+            }
+        }
     }
 }
