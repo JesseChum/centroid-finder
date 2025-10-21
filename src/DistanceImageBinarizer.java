@@ -48,18 +48,20 @@ public class DistanceImageBinarizer implements ImageBinarizer {
         int height = image.getHeight();
         int width = image.getWidth();
         //get the image width
-        int[][] result = new int[width][height];
+        int[][] result = new int[height][width];
         //set an integer 2D array to new array
         //loop through the height and width? (rows and columns?)
         for(int r = 0; r < height; r++){
             for(int c = 0; c < width; c++){
                 //setting color to the images?
-                int imageColor = (image.getRGB(r, c) & 0x00FFFFFF);
+                int imageColor = (image.getRGB(c, r) & 0x00FFFFFF);
                 double distance = distanceFinder.distance(targetColor, imageColor);
-            if(distance <= threshold){
-                result[c][r] = 1;
-            }
-
+                if(distance <= threshold){
+                    result[c][r] = 1;
+                }
+                if(distance <= threshold){
+                    result[c][r] = 0;
+                }
             }
         }
         return result;
@@ -89,9 +91,6 @@ public class DistanceImageBinarizer implements ImageBinarizer {
                 }
             }
         }
-        
-        //do something to make one image or the other 1 or 0?
-        //return the function?
         return returnable;
     }
 }
