@@ -1,6 +1,8 @@
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 public class DfsBinaryGroupFinder implements BinaryGroupFinder {
    /**
@@ -47,38 +49,31 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
         // global set - empty when we start
         HashSet<Coordinate> visitedGlobal = new HashSet<Coordinate>();
         List<Group> returnable = new ArrayList<Group>();
-        // for loop through the int[]
-        for (int i = 0; i < image.length; i++){
-        // for loop through the int[][] (double loop)
-         for (int j = 0; j < image[i].length; j++){
-            // if is '1' - we've entered a group
-            if( image[i][j] == 1);
-            // declare visited set - empty when we find a new group.
-            HashSet<Coordinate> visitedCur = new HashSet<>();
-            Coordinate cur = new Coordinate(i, j);
-            // enter recursive function - Niko
-            searchLocation(image, cur, visitedCur, visitedGlobal);        
-            // we are returned a group
-            int groupSize = visitedCur.size();
-            // we put that group in a list
-            int x = 0;
-            int y = 0;
-            for (Coordinate temp : visitedCur){
-               x += temp.x();
-               y += temp.y();
-               x = x / groupSize;
-               y = y / groupSize;
+        // iterate rows (y) and columns (x)
+        for (int y = 0; y < image.length; y++){
+            for (int x = 0; x < image[y].length; x++){
+                // REWRITE FOR ITERATIVE - RECURSIVE JUST KEEPS STACKOVERFLOWING
+                // if coordinate is 1
+                    // make cur coordiante
+                    // check visitedGlobal
+                    // make VisitedCur
+                    // SearchLocation with cur
+                    // int groupsize = visiteCur.size
+                    // int sumX = 0
+                    // int sumY = 0
+                    // For every coordinate in visited
+                        // sum x
+                        // sum y
+                    // Center X
+                    // Center Y
+                    // make new center coordinate
+                    // make new group
+                    // add group to returnable
             }
-            Coordinate center = new Coordinate(x,y);
-            Group foundGroup = new Group(groupSize, center);
-            returnable.add(foundGroup);
-            // for loop ends
         }
-        // for loop ends
-        }
-        // we return a list of groups 
-        return returnable;
-        }
+        // java util sort returnable
+        // return returnable
+    }
 
 
     // We could probably do a few things here
@@ -86,25 +81,23 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
     // We could also track the size of the group by increasing it each valid move
     // then, we return the group as a whole - Niko
     private static void searchLocation(int[][] image, Coordinate startingCoordinate, HashSet<Coordinate> visitedTemp, HashSet<Coordinate> visitedGlobal) {
-        int x = startingCoordinate.x();
-        int y = startingCoordinate.y();
-        // if in valid, return.
-        if(x < 0 || y < 0 || x >= image.length || y >= image[x].length) return;
-        if(visitedTemp.contains(startingCoordinate)) return;
-        // if valid, we add to the visited set
-        visitedTemp.add(startingCoordinate);
-        visitedGlobal.add(startingCoordinate);
-        
-        int[][] moves = {
-            {-1, 0}, //Up
-            {1, 0}, //Down
-            {0, 1}, //Right
-            {0, -1} //Left
+       // Make a queue
+       // put into queue 
+
+       int[][] moves = {
+            {0, -1}, 
+            {0, 1},  
+            {-1, 0}, 
+            {1, 0}   
         };
 
-        for (int[] move : moves) {
-            
-        }
-            // run searchLocation with the new coordinate
+        // while the stack is not empty
+            // pop the coordinate
+            // x and y
+            // check the bounds
+            // check if visited
+            // check if '1'
+            // mark as visited
+            // push neighbors into stack
     }
 }
