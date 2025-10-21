@@ -81,12 +81,17 @@ public class DistanceImageBinarizer implements ImageBinarizer {
         BufferedImage returnable = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for(int r = 0; r < image.length; r++){
             for(int c = 0; c < image[r].length; c++){
-                if()
+                if(image[r][c] == 1){
+                    returnable.setRGB(c, r, 0xFFFFFF);
+                }
+                else{
+                    returnable.setRGB(c, r, 0x000000);
+                }
             }
         }
         
         //do something to make one image or the other 1 or 0?
         //return the function?
-        return null;
+        return returnable;
     }
 }
