@@ -52,27 +52,33 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
         // iterate rows (y) and columns (x)
         for (int y = 0; y < image.length; y++){
             for (int x = 0; x < image[y].length; x++){
-                // REWRITE FOR ITERATIVE - RECURSIVE JUST KEEPS STACKOVERFLOWING
-                // if coordinate is 1
-                    // make cur coordiante
-                    // check visitedGlobal
-                    // make VisitedCur
-                    // SearchLocation with cur
-                    // int groupsize = visiteCur.size
-                    // int sumX = 0
-                    // int sumY = 0
-                    // For every coordinate in visited
-                        // sum x
-                        // sum y
-                    // Center X
-                    // Center Y
-                    // make new center coordinate
-                    // make new group
-                    // add group to returnable
+                if(image[y][x] == 1){
+                    Coordinate cur = new Coordinate(x, y);
+                    if(!visitedGlobal.contains(cur)){
+                    HashSet<Coordinate> visitedCur = new HashSet<>();
+                    searchLocation(image, cur, visitedCur, visitedGlobal);
+                    // we recieve group
+                    int groupSize = visitedCur.size();
+                    if (groupSize != 0){
+                        int sumX = 0;
+                        int sumY = 0;
+
+                        for(Coordinate c : visitedCur){
+                            sumX += c.x();
+                            sumY += c.y();
+                        }
+                        int centerX = sumX/groupSize;
+                        int centerY = sumY/groupSize;
+                        Coordinate center = new Coordinate(centerX, centerY);
+                        Group curGroup = new Group(groupSize, center);
+                        returnable.add(curGroup);
+                        }
+                    }
+                }
             }
         }
-        // java util sort returnable
-        // return returnable
+        java.util.Collections.sort(returnable);
+        return returnable;
     }
 
 
