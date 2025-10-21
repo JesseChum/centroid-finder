@@ -59,9 +59,6 @@ public class DistanceImageBinarizer implements ImageBinarizer {
                 if(distance <= threshold){
                     result[c][r] = 1;
                 }
-                if(distance <= threshold){
-                    result[c][r] = 0;
-                }
             }
         }
         return result;
