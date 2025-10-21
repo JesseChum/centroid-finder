@@ -75,11 +75,15 @@ public class DistanceImageBinarizer implements ImageBinarizer {
      */
     @Override
     public BufferedImage toBufferedImage(int[][] image) {
-        // get the image height
-        // get the image length
-        //look at that formula in wave4
-        //new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        //loop through the height and width? (rows and columns?)
+        int height = image.length;
+        int width = image[0].length;
+
+        BufferedImage returnable = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for(int r = 0; r < image.length; r++){
+            for(int c = 0; c < image[r].length; c++){
+                if()
+            }
+        }
         
         //do something to make one image or the other 1 or 0?
         //return the function?
