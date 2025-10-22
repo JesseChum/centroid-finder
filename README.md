@@ -1,5 +1,7 @@
 # centroid-finder
 
+Making small change for centroid video branch
+
 ## _DO THIS FIRST_ Wave 0: AI Rules
 
 AI is _NOT ALLOWED_ for generating implementations of the classes.
