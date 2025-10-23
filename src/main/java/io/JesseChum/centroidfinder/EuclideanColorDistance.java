@@ -1,4 +1,4 @@
-
+package io.JesseChum.centroidfinder;
 
 public class EuclideanColorDistance implements ColorDistanceFinder {
     /**

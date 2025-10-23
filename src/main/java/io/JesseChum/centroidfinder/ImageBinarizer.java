@@ -1,3 +1,5 @@
+package io.JesseChum.centroidfinder;
+
 import java.awt.image.BufferedImage;
 
 /**
