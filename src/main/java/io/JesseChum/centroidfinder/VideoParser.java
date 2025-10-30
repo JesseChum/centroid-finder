@@ -1,3 +1,5 @@
+package io.JesseChum.centroidfinder;
+
 public class VideoParser {
     private final String inputPath;
     private final String outputCsv;

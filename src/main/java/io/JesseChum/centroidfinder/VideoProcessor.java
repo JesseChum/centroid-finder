@@ -1,4 +1,5 @@
 package io.JesseChum.centroidfinder;
+
 import io.JesseChum.centroidfinder.DfsBinaryGroupFinder;
 import io.JesseChum.centroidfinder.EuclideanColorDistance;
 
