@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Users\jesse\tools\jdk-25_windows-x64_bin\jdk-25\bin"/>
-    <property name="sun.java.command" value="C:\Users\jesse\AppData\Local\Temp\surefire8201717640457064219\surefirebooter-20251029233921162_3.jar C:\Users\jesse\AppData\Local\Temp\surefire8201717640457064219 2025-10-29T23-39-20_808-jvmRun1 surefire-20251029233921162_1tmp surefire_0-20251029233921162_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\jesse\AppData\Local\Temp\surefire7230767092598268587\surefirebooter-20251029235041397_3.jar C:\Users\jesse\AppData\Local\Temp\surefire7230767092598268587 2025-10-29T23-50-41_191-jvmRun1 surefire-20251029235041397_1tmp surefire_0-20251029235041397_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\jesse\Desktop\SDEV334\centroid-finder\target\test-classes;C:\Users\jesse\Desktop\SDEV334\centroid-finder\target\classes;C:\Users\jesse\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\jesse\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter\5.8.2\junit-jupiter-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.8.2\junit-jupiter-api-5.8.2.jar;C:\Users\jesse\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\jesse\.m2\repository\org\junit\platform\junit-platform-commons\1.8.2\junit-platform-commons-1.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.8.2\junit-jupiter-params-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.8.2\junit-jupiter-engine-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\vintage\junit-vintage-engine\5.8.2\junit-vintage-engine-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\platform\junit-platform-engine\1.8.2\junit-platform-engine-1.8.2.jar;C:\Users\jesse\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-controls\22.0.2\javafx-controls-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-controls\22.0.2\javafx-controls-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-graphics\22.0.2\javafx-graphics-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-graphics\22.0.2\javafx-graphics-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-base\22.0.2\javafx-base-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-base\22.0.2\javafx-base-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-media\22.0.2\javafx-media-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-media\22.0.2\javafx-media-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-swing\22.0.2\javafx-swing-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-swing\22.0.2\javafx-swing-22.0.2-win.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\jesse\AppData\Local\Temp\surefire8201717640457064219\surefirebooter-20251029233921162_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\jesse\AppData\Local\Temp\surefire7230767092598268587\surefirebooter-20251029235041397_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="25+37-LTS-3491"/>
@@ -59,6 +59,6 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="69.0"/>
   </properties>
-  <testcase name="dfsTwoGroupsSizeNine" classname="io.JesseChum.centroidfinder.DfsBinaryTests" time="0.053"/>
-  <testcase name="dfsOneGroupSizeNine" classname="io.JesseChum.centroidfinder.DfsBinaryTests" time="0.003"/>
+  <testcase name="dfsTwoGroupsSizeNine" classname="io.JesseChum.centroidfinder.DfsBinaryTests" time="0.054"/>
+  <testcase name="dfsOneGroupSizeNine" classname="io.JesseChum.centroidfinder.DfsBinaryTests" time="0.002"/>
 </testsuite>
