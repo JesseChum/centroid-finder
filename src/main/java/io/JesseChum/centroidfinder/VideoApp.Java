@@ -3,7 +3,7 @@ package io.JesseChum.centroidfinder;
 public class VideoApp {
     public static void main(String[] args) {
         try {
-            ArgumentParser parser = new ArgumentParser(args);
+            VideoParser parser = new VideoParser(args);
 
             VideoProcessor processor = new VideoProcessor(
                 parser.getInputPath(),
