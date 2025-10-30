@@ -59,33 +59,21 @@
 </dependency>
 </dependencies>
 
-    <build>
-    <plugins>
-        <!-- Include main class in JAR manifest -->
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.3.0</version>
-            <configuration>
-                <archive>
-                    <manifest>
-                        <addClasspath>true</addClasspath>
-                        <mainClass>io.JesseChum.centroidfinder.VideoApp</mainClass>
-                    </manifest>
-                </archive>
-            </configuration>
-        </plugin>
-
-        <!-- For running directly with mvn exec:java -->
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>3.1.0</version>
-            <configuration>
-                <mainClass>io.JesseChum.centroidfinder.VideoApp</mainClass>
-            </configuration>
-        </plugin>
-    </plugins>
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-jar-plugin</artifactId>
+      <version>3.3.0</version>
+      <configuration>
+        <archive>
+          <manifest>
+            <mainClass>io.JesseChum.centroidfinder.VideoApp</mainClass>
+          </manifest>
+        </archive>
+      </configuration>
+    </plugin>
+  </plugins>
 </build>
 
 </project>
