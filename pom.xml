@@ -79,7 +79,9 @@
             <configuration>
                 <mainClass>io.JesseChum.centroidfinder.VideoApp</mainClass>
             </configuration>
+            
         </plugin>
+        
     </plugins>
 </build>
 
