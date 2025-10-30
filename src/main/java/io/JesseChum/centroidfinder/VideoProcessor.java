@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
@@ -61,7 +62,8 @@ public class VideoProcessor {
 
                 for (double t = 0; t < duration; t += step) {
                     player.seek(Duration.seconds(t));
-                    Image frame = player.snapshot(null, null);
+                    MediaView mediaView = new MediaView(player);
+                    Image frame = mediaView.snapshot(null, null);
 
                     if (frame == null) {
                         writeLine(writer, t, -1, -1);
