@@ -9,6 +9,9 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.animation.PauseTransition;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -89,47 +92,67 @@ public class VideoProcessor {
 
                     player.play();
 
-                    // Run frame capture in background thread
+                    // Run frame capture in background thread, but perform snapshot on FX thread and transfer the Image back
                     new Thread(() -> {
                         try {
                             for (double t = 0; t < duration; t += step) {
-                                double timestamp = t;
+                                final double timestamp = t;
 
-                                // Seek to frame position
-                                Platform.runLater(() -> player.seek(Duration.seconds(timestamp)));
+                                final CountDownLatch frameLatch = new CountDownLatch(1);
+                                final Image[] frameHolder = new Image[1];
 
-                                // Give time for frame to update
-                                Thread.sleep(200);
-
-                                // Take snapshot and analyze
+                                // On FX thread: seek, wait a bit, then snapshot and release latch
                                 Platform.runLater(() -> {
-                                    Image frame = view.snapshot(null, null);
+                                    try {
+                                        player.seek(Duration.seconds(timestamp));
 
-                                    if (frame == null) {
-                                        System.out.println("⚠️ Frame is null at " + timestamp + "s");
-                                        writeLine(writer, timestamp, -1, -1);
-                                        return;
-                                    }
-
-                                    int w = (int) frame.getWidth();
-                                    int h = (int) frame.getHeight();
-                                    int sample = frame.getPixelReader().getArgb(w / 2, h / 2);
-                                    System.out.printf("🎨 Frame %.2fs center pixel: 0x%08X%n", timestamp, sample);
-
-                                    BufferedImage buffered = SwingFXUtils.fromFXImage(frame, null);
-                                    List<Group> groups = centroidFinder.findConnectedGroups(buffered);
-
-                                    if (groups.isEmpty()) {
-                                        writeLine(writer, timestamp, -1, -1);
-                                    } else {
-                                        Group largest = groups.get(0);
-                                        System.out.println("🟢 Writing centroid at " + timestamp + "s");
-                                        writeLine(writer, timestamp, largest.centroid().x(), largest.centroid().y());
+                                        PauseTransition wait = new PauseTransition(Duration.millis(200));
+                                        wait.setOnFinished(ev -> {
+                                            try {
+                                                Image frame = view.snapshot(null, null);
+                                                frameHolder[0] = frame;
+                                            } catch (Exception ex) {
+                                                ex.printStackTrace();
+                                            } finally {
+                                                frameLatch.countDown();
+                                            }
+                                        });
+                                        wait.play();
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                        frameLatch.countDown();
                                     }
                                 });
+
+                                // Wait for snapshot (timeout to avoid hang)
+                                frameLatch.await(3, TimeUnit.SECONDS);
+
+                                Image frame = frameHolder[0];
+                                if (frame == null) {
+                                    System.out.println("⚠️ Frame is null at " + timestamp + "s");
+                                    writeLine(writer, timestamp, -1, -1);
+                                    continue;
+                                }
+
+                                int w = (int) frame.getWidth();
+                                int h = (int) frame.getHeight();
+                                int sample = frame.getPixelReader().getArgb(w / 2, h / 2);
+                                System.out.printf("Frame %.2fs center pixel: 0x%08X%n", timestamp, sample);
+
+                                BufferedImage buffered = SwingFXUtils.fromFXImage(frame, null);
+                                List<Group> groups = centroidFinder.findConnectedGroups(buffered);
+
+                                if (groups.isEmpty()) {
+                                    writeLine(writer, timestamp, -1, -1);
+                                } else {
+                                    Group largest = groups.get(0);
+                                    System.out.println("🟢 Writing centroid at " + timestamp + "s");
+                                    writeLine(writer, timestamp, largest.centroid().x(), largest.centroid().y());
+                                }
                             }
 
-                            Thread.sleep(1000);
+                            // Give any remaining FX operations a moment to finish
+                            Thread.sleep(200);
                             writer.close();
                             System.out.println("✅ Processing complete. CSV saved to " + outputCsv);
                             Platform.exit();
@@ -137,7 +160,7 @@ public class VideoProcessor {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    }).start();
+                    }, "frame-writer-thread").start();
                 });
 
                 System.out.println("7️⃣ Calling play()...");
