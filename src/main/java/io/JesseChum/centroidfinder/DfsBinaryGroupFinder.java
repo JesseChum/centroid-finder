@@ -104,7 +104,9 @@ public class DfsBinaryGroupFinder implements BinaryGroupFinder {
             int x = cur.x();
             int y = cur.y();
 
-            if (y < 0 || x < 0 || x >= image[y].length || y >= image.length) continue;  
+            // Check Y bounds before accessing image[y] to avoid ArrayIndexOutOfBounds when y is out of range
+            if (y < 0 || x < 0 || y >= image.length) continue;
+            if (x >= image[y].length) continue;
             if (visitedTemp.contains(cur) || visitedGlobal.contains(cur)) continue;
             if (image[y][x] != 1) continue;
 
