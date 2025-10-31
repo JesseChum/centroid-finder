@@ -14,9 +14,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.List;
 
-
-
-
 public class VideoProcessor {
     private final String inputPath;
     private final String outputCsv;
@@ -47,29 +44,29 @@ public class VideoProcessor {
                 System.out.println("2️⃣ Creating Media...");
                 Media media = new Media(videoFile.toURI().toString());
 
-                // 🔎 Add Media error listener
-                media.setOnError(() -> {
-                    System.out.println("❌ Media error: " + media.getError());
-                });
+                media.setOnError(() ->
+                    System.out.println("❌ Media error: " + media.getError())
+                );
 
                 System.out.println("3️⃣ Creating MediaPlayer...");
                 MediaPlayer player = new MediaPlayer(media);
 
-                // 🔎 Add MediaPlayer error listener
-                player.setOnError(() -> {
-                    System.out.println("❌ MediaPlayer error: " + player.getError());
-                });
+                player.setOnError(() ->
+                    System.out.println("❌ MediaPlayer error: " + player.getError())
+                );
 
                 System.out.println("4️⃣ Creating MediaView...");
                 MediaView view = new MediaView(player);
-                
 
                 javafx.scene.Group root = new javafx.scene.Group(view);
                 Scene scene = new Scene(root);
                 Stage stage = new Stage();
                 stage.setScene(scene);
-                stage.setOpacity(0);  // Make the window invisible
+                stage.setOpacity(0); // invisible window
+                stage.setWidth(640);
+                stage.setHeight(360);
                 stage.show();
+                stage.setX(-2000);
 
                 // Prepare centroid finder components
                 ColorDistanceFinder distanceFinder = new EuclideanColorDistance();
@@ -90,36 +87,57 @@ public class VideoProcessor {
                     int frameRate = 30;
                     double step = 1.0 / frameRate;
 
-                    for (double t = 0; t < duration; t += step) {
-                        player.seek(Duration.seconds(t));
-                        Image frame = view.snapshot(null, null);
+                    player.play();
 
-                        if (frame == null) {
-                            System.out.println("⚠️ Frame is null at " + t + "s");
-                            writeLine(writer, t, -1, -1);
-                            continue;
+                    // Run frame capture in background thread
+                    new Thread(() -> {
+                        try {
+                            for (double t = 0; t < duration; t += step) {
+                                double timestamp = t;
+
+                                // Seek to frame position
+                                Platform.runLater(() -> player.seek(Duration.seconds(timestamp)));
+
+                                // Give time for frame to update
+                                Thread.sleep(200);
+
+                                // Take snapshot and analyze
+                                Platform.runLater(() -> {
+                                    Image frame = view.snapshot(null, null);
+
+                                    if (frame == null) {
+                                        System.out.println("⚠️ Frame is null at " + timestamp + "s");
+                                        writeLine(writer, timestamp, -1, -1);
+                                        return;
+                                    }
+
+                                    int w = (int) frame.getWidth();
+                                    int h = (int) frame.getHeight();
+                                    int sample = frame.getPixelReader().getArgb(w / 2, h / 2);
+                                    System.out.printf("🎨 Frame %.2fs center pixel: 0x%08X%n", timestamp, sample);
+
+                                    BufferedImage buffered = SwingFXUtils.fromFXImage(frame, null);
+                                    List<Group> groups = centroidFinder.findConnectedGroups(buffered);
+
+                                    if (groups.isEmpty()) {
+                                        writeLine(writer, timestamp, -1, -1);
+                                    } else {
+                                        Group largest = groups.get(0);
+                                        System.out.println("🟢 Writing centroid at " + timestamp + "s");
+                                        writeLine(writer, timestamp, largest.centroid().x(), largest.centroid().y());
+                                    }
+                                });
+                            }
+
+                            Thread.sleep(1000);
+                            writer.close();
+                            System.out.println("✅ Processing complete. CSV saved to " + outputCsv);
+                            Platform.exit();
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-
-                        BufferedImage buffered = SwingFXUtils.fromFXImage(frame, null);
-                        List<Group> groups = centroidFinder.findConnectedGroups(buffered);
-
-                        if (groups.isEmpty()) {
-                            writeLine(writer, t, -1, -1);
-                        } else {
-                            Group largest = groups.get(0);
-                            System.out.println("🟢 Writing centroid at " + t + "s");
-                            writeLine(writer, t, largest.centroid().x(), largest.centroid().y());
-                        }
-                    }
-
-                    try {
-                        writer.close();
-                        System.out.println("✅ Processing complete. CSV saved to " + outputCsv);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    Platform.exit();
+                    }).start();
                 });
 
                 System.out.println("7️⃣ Calling play()...");
