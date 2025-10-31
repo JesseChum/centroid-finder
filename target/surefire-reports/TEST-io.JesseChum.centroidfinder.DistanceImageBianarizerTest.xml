@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="io.JesseChum.centroidfinder.DistanceImageBianarizerTest" time="0.056" tests="8" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="25"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="C:\Users\jesse\Desktop\SDEV334\centroid-finder\target\test-classes;C:\Users\jesse\Desktop\SDEV334\centroid-finder\target\classes;C:\Users\jesse\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\jesse\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter\5.8.2\junit-jupiter-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.8.2\junit-jupiter-api-5.8.2.jar;C:\Users\jesse\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\jesse\.m2\repository\org\junit\platform\junit-platform-commons\1.8.2\junit-platform-commons-1.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.8.2\junit-jupiter-params-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.8.2\junit-jupiter-engine-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\vintage\junit-vintage-engine\5.8.2\junit-vintage-engine-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\platform\junit-platform-engine\1.8.2\junit-platform-engine-1.8.2.jar;C:\Users\jesse\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-controls\22.0.2\javafx-controls-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-controls\22.0.2\javafx-controls-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-graphics\22.0.2\javafx-graphics-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-graphics\22.0.2\javafx-graphics-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-base\22.0.2\javafx-base-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-base\22.0.2\javafx-base-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-media\22.0.2\javafx-media-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-media\22.0.2\javafx-media-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-swing\22.0.2\javafx-swing-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-swing\22.0.2\javafx-swing-22.0.2-win.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="America/Los_Angeles"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="25"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.boot.library.path" value="C:\Users\jesse\tools\jdk-25_windows-x64_bin\jdk-25\bin"/>
+    <property name="sun.java.command" value="C:\Users\jesse\AppData\Local\Temp\surefire14629627009269300895\surefirebooter-20251030204304336_3.jar C:\Users\jesse\AppData\Local\Temp\surefire14629627009269300895 2025-10-30T20-43-03_998-jvmRun1 surefire-20251030204304336_1tmp surefire_0-20251030204304336_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="C:\Users\jesse\Desktop\SDEV334\centroid-finder\target\test-classes;C:\Users\jesse\Desktop\SDEV334\centroid-finder\target\classes;C:\Users\jesse\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\jesse\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter\5.8.2\junit-jupiter-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.8.2\junit-jupiter-api-5.8.2.jar;C:\Users\jesse\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\jesse\.m2\repository\org\junit\platform\junit-platform-commons\1.8.2\junit-platform-commons-1.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.8.2\junit-jupiter-params-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.8.2\junit-jupiter-engine-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\vintage\junit-vintage-engine\5.8.2\junit-vintage-engine-5.8.2.jar;C:\Users\jesse\.m2\repository\org\junit\platform\junit-platform-engine\1.8.2\junit-platform-engine-1.8.2.jar;C:\Users\jesse\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-controls\22.0.2\javafx-controls-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-controls\22.0.2\javafx-controls-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-graphics\22.0.2\javafx-graphics-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-graphics\22.0.2\javafx-graphics-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-base\22.0.2\javafx-base-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-base\22.0.2\javafx-base-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-media\22.0.2\javafx-media-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-media\22.0.2\javafx-media-22.0.2-win.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-swing\22.0.2\javafx-swing-22.0.2.jar;C:\Users\jesse\.m2\repository\org\openjfx\javafx-swing\22.0.2\javafx-swing-22.0.2-win.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\jesse"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2025-09-16"/>
+    <property name="java.home" value="C:\Users\jesse\tools\jdk-25_windows-x64_bin\jdk-25"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\Users\jesse\Desktop\SDEV334\centroid-finder"/>
+    <property name="java.vm.compressedOopsMode" value="32-bit"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\jesse\AppData\Local\Temp\surefire14629627009269300895\surefirebooter-20251030204304336_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="25+37-LTS-3491"/>
+    <property name="user.name" value="jesse"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\jesse\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\jesse\AppData\Local\Temp\"/>
+    <property name="java.version" value="25"/>
+    <property name="user.dir" value="C:\Users\jesse\Desktop\SDEV334\centroid-finder"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Users\jesse\tools\jdk-25_windows-x64_bin\jdk-25\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Users\jesse\tools\jdk-25\bin;C:\Users\jesse\tools\jdk-25\bin;C:\Users\jesse\tools\jdk-25\bin;C:\Users\jesse\tools\jdk-25\bin;C:\Users\jesse\tools\jdk-25\bin;C:\Users\jesse\tools\jdk-25\bin;C:\Users\jesse\tools\jdk-25\bin;C:\Users\jesse\tools\jdk-25\bin;C:\Users\jesse\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\jesse\bin;C:\Users\jesse\tools\jdk-25_windows-x64_bin\jdk-25\bin;C:\Ruby33-x64\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\apache-maven-3.9.11\bin;C:\Users\jesse\tools\jdk-25\bin;C:\Users\jesse\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\PyCharm Community Edition 2021.1.2\bin;C:\Program Files\nodejs;C:\Users\jesse\AppData\Local\GitHubDesktop\bin;C:\Users\jesse\AppData\Roaming\npm;C:\Users\jesse\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\jesse\AppData\Local\Microsoft\WinGet\Links;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="25+37-LTS-3491"/>
+    <property name="stdin.encoding" value="Cp1252"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="69.0"/>
+  </properties>
+  <testcase name="testFarColorBecomesBlack" classname="io.JesseChum.centroidfinder.DistanceImageBianarizerTest" time="0.029"/>
+  <testcase name="testAllPixelsBlackWhenThresholdZero" classname="io.JesseChum.centroidfinder.DistanceImageBianarizerTest" time="0.001"/>
+  <testcase name="testSingleBlackPixel" classname="io.JesseChum.centroidfinder.DistanceImageBianarizerTest" time="0.001"/>
+  <testcase name="test2x2MixedImage" classname="io.JesseChum.centroidfinder.DistanceImageBianarizerTest" time="0.0"/>
+  <testcase name="test2x2ImageMixedColors" classname="io.JesseChum.centroidfinder.DistanceImageBianarizerTest" time="0.001"/>
+  <testcase name="testDimensionsMatchInputArray" classname="io.JesseChum.centroidfinder.DistanceImageBianarizerTest" time="0.001"/>
+  <testcase name="testExactTargetColorBecomesWhite" classname="io.JesseChum.centroidfinder.DistanceImageBianarizerTest" time="0.001"/>
+  <testcase name="testSingleWhitePixel" classname="io.JesseChum.centroidfinder.DistanceImageBianarizerTest" time="0.001"/>
+</testsuite>

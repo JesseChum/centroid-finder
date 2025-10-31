@@ -23,5 +23,7 @@
 hs_err_pid*
 replay_pid*
 
+# prevent video uploads
+*.mp4
 .resources
 .sample-1.mp4
