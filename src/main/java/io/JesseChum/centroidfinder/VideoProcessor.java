@@ -33,32 +33,32 @@ public class VideoProcessor {
     public void process() {
         Platform.startup(() -> {
             try {
-                System.out.println("1️⃣ Starting process()");
+                System.out.println("1 Starting process()");
                 File videoFile = new File(inputPath);
                 System.out.println("Video path: " + videoFile.toURI());
                 System.out.println("File exists? " + videoFile.exists());
 
                 if (!videoFile.exists()) {
-                    System.out.println("❌ Video file not found: " + inputPath);
+                    System.out.println(" Video file not found: " + inputPath);
                     Platform.exit();
                     return;
                 }
 
-                System.out.println("2️⃣ Creating Media...");
+                System.out.println("2 Creating Media...");
                 Media media = new Media(videoFile.toURI().toString());
 
                 media.setOnError(() ->
-                    System.out.println("❌ Media error: " + media.getError())
+                    System.out.println("Media error: " + media.getError())
                 );
 
-                System.out.println("3️⃣ Creating MediaPlayer...");
+                System.out.println("3 Creating MediaPlayer...");
                 MediaPlayer player = new MediaPlayer(media);
 
                 player.setOnError(() ->
-                    System.out.println("❌ MediaPlayer error: " + player.getError())
+                    System.out.println("MediaPlayer error: " + player.getError())
                 );
 
-                System.out.println("4️⃣ Creating MediaView...");
+                System.out.println("4 Creating MediaView...");
                 MediaView view = new MediaView(player);
 
                 javafx.scene.Group root = new javafx.scene.Group(view);
@@ -80,9 +80,9 @@ public class VideoProcessor {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(outputCsv));
                 writer.write("time_seconds,x,y\n");
 
-                System.out.println("5️⃣ Registering onReady listener...");
+                System.out.println("5 Registering onReady listener...");
                 player.setOnReady(() -> {
-                    System.out.println("6️⃣ MediaPlayer is READY ✅");
+                    System.out.println("6 MediaPlayer is READY");
                     double duration = player.getTotalDuration().toSeconds();
                     System.out.println("Processing video: " + inputPath);
                     System.out.println("Duration: " + duration + " seconds");
@@ -129,7 +129,7 @@ public class VideoProcessor {
 
                                 Image frame = frameHolder[0];
                                 if (frame == null) {
-                                    System.out.println("⚠️ Frame is null at " + timestamp + "s");
+                                    System.out.println("Frame is null at " + timestamp + "s");
                                     writeLine(writer, timestamp, -1, -1);
                                     continue;
                                 }
@@ -146,7 +146,7 @@ public class VideoProcessor {
                                     writeLine(writer, timestamp, -1, -1);
                                 } else {
                                     Group largest = groups.get(0);
-                                    System.out.println("🟢 Writing centroid at " + timestamp + "s");
+                                    System.out.println(" Writing centroid at " + timestamp + "s");
                                     writeLine(writer, timestamp, largest.centroid().x(), largest.centroid().y());
                                 }
                             }
@@ -154,7 +154,7 @@ public class VideoProcessor {
                             // Give any remaining FX operations a moment to finish
                             Thread.sleep(200);
                             writer.close();
-                            System.out.println("✅ Processing complete. CSV saved to " + outputCsv);
+                            System.out.println("Processing complete. CSV saved to " + outputCsv);
                             Platform.exit();
 
                         } catch (Exception e) {
@@ -163,9 +163,9 @@ public class VideoProcessor {
                     }, "frame-writer-thread").start();
                 });
 
-                System.out.println("7️⃣ Calling play()...");
+                System.out.println("7 Calling play()...");
                 player.play();
-                System.out.println("8️⃣ Waiting for MediaPlayer to be ready...");
+                System.out.println("8 Waiting for MediaPlayer to be ready...");
 
             } catch (Exception e) {
                 e.printStackTrace();
