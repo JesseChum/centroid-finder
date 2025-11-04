@@ -5,6 +5,6 @@ export const apiRouter = express.Router();
 
 // Define routes
 apiRouter.get("/api/videos", videoController.getAllVideos);
-apiRouter.get("/api/thumbnail/:filename", videoController.getVideoById);
-apiRouter.post("/api/process/:filename", videoController.createVideo);
-apiRouter.post("/api/process/:jobId/status", videoController.updateVideo);
+apiRouter.get("/api/thumbnail/:filename", videoController.getThumbnail);
+apiRouter.post("/api/process/:filename", videoController.startJob);
+apiRouter.post("/api/process/:jobId/status", videoController.getStatus);
