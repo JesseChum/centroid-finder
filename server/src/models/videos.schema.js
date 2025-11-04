@@ -8,6 +8,14 @@ const schema = sequelize.define('product', {
         primaryKey: true,
         autoIncrement: true
     },
+    processed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
 });
 
 

@@ -1,5 +1,5 @@
 import express from "express";
-import Router from "./routes/api.routes.js";
+import { apiRouter } from "./src/routes/api.routes.js";
 
 const app = express();
 const PORT = 3000;
@@ -9,6 +9,6 @@ app.set("views", "src/views");
 app.use(express.urlencoded({urlencoded: true}));
 app.use(express.json());
 app.use(express.static("./src/public"));
-app.use("/", Router);
+app.use("/", apiRouter);
 
 app.listen(PORT, console.log(`http://localhost:${PORT}`));

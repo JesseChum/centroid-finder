@@ -1,7 +1,11 @@
-import { Router } from 'express';
+import express from "express";
+import { videoController } from "../controllers/api.controller.js";
 
-const apiRouter = Router();
+export const apiRouter = express.Router();
 
-apiRouter.get("/", getVideos);
-
-export default apiRouter;
+// Define routes
+apiRouter.get("/api/videos", videoController.getAllVideos);
+apiRouter.get("/api/videos/:id", videoController.getVideoById);
+apiRouter.post("/api/videos", videoController.createVideo);
+apiRouter.put("/api/videos/:id", videoController.updateVideo);
+apiRouter.delete("/api/videos/:id", videoController.deleteVideo);
