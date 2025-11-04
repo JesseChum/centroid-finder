@@ -1,5 +1,11 @@
 # centroid-finder
+<<<<<<< HEAD
 Changed readme file to test video branch
+=======
+
+Making small change for centroid video branch
+
+>>>>>>> origin/server
 ## _DO THIS FIRST_ Wave 0: AI Rules
 
 AI is _NOT ALLOWED_ for generating implementations of the classes.
