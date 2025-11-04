@@ -1,0 +1,17 @@
+{
+  "name": "centroid-finder",
+  "version": "1.0.0",
+  "description": "serverside",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jesse and Niko",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
