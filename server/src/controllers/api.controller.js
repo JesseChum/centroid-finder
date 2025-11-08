@@ -69,6 +69,20 @@ export const videoController = {
 //         // if jar starts process
 //             // return jobId status
 //         // return job failed status
+startJob(req, res) {
+    const { videoName } = req.params;
+    if (!videoName) return res.status(404).json({ error: "No video name" });
+
+    try {
+      // Example jar command
+      exec(`java -jar videoProcessor.jar start ${videoName}`, (err, stdout) => {
+        if (err) return res.status(400).json({ error: "Command failed" });
+        res.status(200).json({ jobId: stdout.trim() });
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 
 //     * getStatus
 //     // if jobId does not exist
