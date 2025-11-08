@@ -94,6 +94,49 @@ startJob(req, res) {
 //             // return status of process
 //         // if has csv
 //             // return csv
+
+    getStatus(req, res) {
+        const { jobId } = req.params;
+        if (!jobId) {
+            return res.status(404).json({ error: "No job ID provided" });
+        }
+
+        try {
+            // Check job status using jar
+            exec(`java -jar videoProcessor.jar status ${jobId}`, (err, stdout) => {
+                if (err) {
+                    return res.status(500).json({ error: "Error checking job status" });
+                }
+
+                const status = stdout.trim();
+                
+                // Check if job resulted in error
+                if (status === "error") {
+                    return res.status(500).json({ status: "error" });
+                }
+                
+                // Check if job is still processing
+                if (status === "processing") {
+                    return res.status(200).json({ status: "processing" });
+                }
+
+                // If job is complete, check for CSV file
+                const csvPath = path.join("output", `${jobId}.csv`);
+                if (fs.existsSync(csvPath)) {
+                    const csvData = fs.readFileSync(csvPath, 'utf8');
+                    return res.status(200).json({ 
+                        status: "complete",
+                        data: csvData
+                    });
+                }
+
+                // If we get here, something unexpected happened
+                return res.status(500).json({ error: "Unexpected job state" });
+            });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
     
 }
 // };
