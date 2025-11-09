@@ -38,29 +38,36 @@ export const videoController = {
     //Step 2: check if video file exists
     const videoPath = path.join("videos", `${videoName}.mp4`);
      if (!fs.existsSync(videoPath)) {
-      res.status(404).json({ error: "Video not found" });
-      return;
+      return res.status(404).json({ error: "Video not found" });
   }
+
+
+  const jarPath = path.join("processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
+    const outputCsv = path.join("output", `${videoName}.csv`);
+    const targetColor = "255,0,0";
+    const threshold = "30";
+
    //Step 3: Try to make thumbnail
+   const thumbCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
    //need to create command still. putting in a random example for now so I dont see an annoying error
-    exec(`java -jar videoProcessor.jar thumbnail ${videoPath}`, (thumbError, thumbOutput) => {
+    exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
       if (thumbError) {
-        console.log("Error making thumbnail:", thumbError);
-        res.status(500).json({ error: "Could not make thumbnail" });
-        return;
+        console.error("Error making thumbnail:", thumbStderr);
+        return res.status(500).json({ error: "Could not make thumbnail" });
       }
+
 
       const thumbnail = thumbOutput.trim();
 
       //Step 4: Start job next
-      exec(`java -jar videoProcessor.jar start ${videoName}`, (jobError, jobOutput) => {
+      const processCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.VideoApp "${videoPath}" "${outputCsv}" "${targetColor}" "${threshold}"`;
+       exec(processCommand, (jobError, jobOutput, jobStderr) => {
         if (jobError) {
-          console.log("Error starting job:", jobError);
-          res.status(400).json({ error: "Could not start job" });
-          return;
+          console.error("Error starting job:", jobStderr);
+          return res.status(400).json({ error: "Could not start job" });
         }
 
-        const jobId = jobOutput.trim();
+        const jobId = videoName;
 
       //Step 5: If both worked, send success reponse
        res.status(200).json({
