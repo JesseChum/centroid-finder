@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { exec } from "child_process";
 
 export const videoController = {
 //      getAllVideos {
@@ -25,63 +26,51 @@ export const videoController = {
     }
     },
     
+  processVideo(req, res) {
+    const {videoName } = req.params;
 
+    //Step 1: Check for video name
+    if (!videoName) {
+      res.status(404).json({ error: "No video name provided" });
+      return;
+    }
 
-//     * getThumbnail
-//     // try to grab video
-//     // if no video
-//     // return 404 of no video
-// send video to jar
-//    // jar tries to return thumbnail
-// if error
-//         // return error status
-//         // else thumbnail
-//         // return status thumbnail
-    getThumbnail(req, res) {
-    const { videoName } = req.params;
-    if (!videoName) return res.status(404).json({ error: "No video name" });
-
-    try {
-      const videoPath = path.join("videos", `${videoName}.mp4`);
-      if (!fs.existsSync(videoPath)) {
-        return res.status(404).json({ error: "Video not found" });
+    //Step 2: check if video file exists
+    const videoPath = path.join("videos", `${videoName}.mp4`);
+     if (!fs.existsSync(videoPath)) {
+      res.status(404).json({ error: "Video not found" });
+      return;
+  }
+   //Step 3: Try to make thumbnail
+   //need to create command still. putting in a random example for now so I dont see an annoying error
+    exec(`java -jar videoProcessor.jar thumbnail ${videoPath}`, (thumbError, thumbOutput) => {
+      if (thumbError) {
+        console.log("Error making thumbnail:", thumbError);
+        res.status(500).json({ error: "Could not make thumbnail" });
+        return;
       }
-    
-      //this line right here is an example jar to get a thumbnail
-       exec(`java -jar videoProcessor.jar thumbnail ${videoPath}`, (err, stdout) => {
-        if (err) return res.status(500).json({ error: "Error generating thumbnail" });
-        res.status(200).json({ thumbnail: stdout });
-      });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
 
-//     * startJob
-//     // try to grab video
-//     // if no video
-//         // return 404 of no video
-//     // else video
-//         // send video to jar
-//         // if error in command
-//             // return bad command status
-//         // jar tries to start process
-//         // if jar starts process
-//             // return jobId status
-//         // return job failed status
-startJob(req, res) {
-    const { videoName } = req.params;
-    if (!videoName) return res.status(404).json({ error: "No video name" });
+      const thumbnail = thumbOutput.trim();
 
-    try {
-      // Example jar command
-      exec(`java -jar videoProcessor.jar start ${videoName}`, (err, stdout) => {
-        if (err) return res.status(400).json({ error: "Command failed" });
-        res.status(200).json({ jobId: stdout.trim() });
+      //Step 4: Start job next
+      exec(`java -jar videoProcessor.jar start ${videoName}`, (jobError, jobOutput) => {
+        if (jobError) {
+          console.log("Error starting job:", jobError);
+          res.status(400).json({ error: "Could not start job" });
+          return;
+        }
+
+        const jobId = jobOutput.trim();
+
+      //Step 5: If both worked, send success reponse
+       res.status(200).json({
+          message: "Video processed successfully",
+          video: videoName,
+          thumbnail: thumbnail,
+          jobId: jobId
+        });
       });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
+    });
   },
 
 //     * getStatus
@@ -138,5 +127,4 @@ startJob(req, res) {
         }
     }
     
-}
-// };
+};
