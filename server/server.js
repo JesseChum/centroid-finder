@@ -9,6 +9,6 @@ app.set("views", "src/views");
 app.use(express.urlencoded({urlencoded: true}));
 app.use(express.json());
 app.use(express.static("./src/public"));
-app.use("/", apiRouter);
+app.use("/api", apiRouter);
 
 app.listen(PORT, console.log(`http://localhost:${PORT}`));
