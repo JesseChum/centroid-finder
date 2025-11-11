@@ -22,7 +22,7 @@ export const videoController = {
         }
     },
     
-   processVideo(req, res) {
+processVideo(req, res) {
     const { videoName } = req.params;
 
     // Step 1: Check for video name
@@ -48,12 +48,21 @@ export const videoController = {
     const thumbCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
     exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
       if (thumbError) {
-        // Log the thumbnail error but continue processing the video. This avoids
-        // failing the whole request when the environment lacks JavaFX.
-        console.warn("Thumbnail generation failed, skipping thumbnail:", thumbStderr);
+        console.warn("Thumbnail generation failed", thumbStderr);
       }
+    });
 
-      // Step 4: Start job (always run regardless of thumbnail result)
+    // run the binarizer
+  },
+
+  startProcess(req, res){
+    // change this to actually grab the query parameters
+    const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
+    const outputCsv = path.join("..", "output", `${videoName}.csv`);
+    const targetColor = "255,0,0";
+    const threshold = "30";
+    const jobId = videoName;
+
       const processCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.VideoApp "${videoPath}" "${outputCsv}" "${targetColor}" "${threshold}"`;
       exec(processCommand, (jobError, jobOutput, jobStderr) => {
         if (jobError) {
@@ -61,8 +70,6 @@ export const videoController = {
           return res.status(400).json({ error: "Could not start job" });
         }
 
-        // Step 5: Return success. Use thumbnail output when available, otherwise
-        // return null for thumbnail.
         const thumbnail = thumbOutput && typeof thumbOutput === 'string' ? thumbOutput.trim() : null;
         res.status(200).json({
           message: "Video processed successfully",
@@ -71,8 +78,7 @@ export const videoController = {
           thumbnail: thumbnail
         });
       });
-    });
-  },
+  }
 
   // GET /api/status/:jobId
   getStatus(req, res) {
