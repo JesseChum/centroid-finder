@@ -112,6 +112,8 @@ processVideo(req, res) {
   // GET /api/status/:jobId
   getStatus(req, res) {
     const { jobId } = req.params;
+    console.log(`[getStatus] Received jobId: "${jobId}" (type: ${typeof jobId})`);
+    
     if (!jobId) {
       return res.status(404).json({ error: "No job ID provided" });
     }
@@ -119,14 +121,25 @@ processVideo(req, res) {
     try {
       // Use an absolute path (based on current working dir) so behavior is stable
       const statusFile = path.resolve(process.cwd(), "src", "processed", "status.json");
+      console.log(`[getStatus] Looking for status file at: ${statusFile}`);
 
       // If we have a status file, try to find the job record
       if (fs.existsSync(statusFile)) {
+        console.log(`[getStatus] Status file exists, reading...`);
         try {
           const raw = fs.readFileSync(statusFile, "utf8");
           const list = JSON.parse(raw || "[]");
-          const rec = list.find(r => String(r.jobId) === String(jobId));
+          console.log(`[getStatus] Parsed ${list.length} entries from status.json`);
+          console.log(`[getStatus] Entries in file:`, list.map(r => ({ jobId: r.jobId, type: typeof r.jobId })));
+          
+          const rec = list.find(r => {
+            const match = String(r.jobId) === String(jobId);
+            console.log(`[getStatus] Comparing "${r.jobId}" (${typeof r.jobId}) === "${jobId}" (${typeof jobId}) => ${match}`);
+            return match;
+          });
+          
           if (rec) {
+            console.log(`[getStatus] Found record for jobId: ${jobId}`, rec);
             // If CSV exists, augment the record with result path
             const csvPath = path.resolve(process.cwd(), "output", `${jobId}.csv`);
             if (fs.existsSync(csvPath)) {
@@ -134,23 +147,29 @@ processVideo(req, res) {
               rec.result = csvPath;
             }
             return res.status(200).json(rec);
+          } else {
+            console.log(`[getStatus] No matching record found in status.json for jobId: ${jobId}`);
           }
         } catch (e) {
-          console.error("Failed to parse status.json", e);
-          // If parsing fails, continue to CSV fallback below instead of hanging
+          console.error(`[getStatus] Failed to parse status.json:`, e);
         }
+      } else {
+        console.log(`[getStatus] Status file does not exist at: ${statusFile}`);
       }
 
-      // Fallback: check for an output CSV with the jobId name (handles jobs
-      // that were not written into status.json for any reason).
+      console.log(`[getStatus] Checking fallback CSV path for jobId: ${jobId}`);
       const fallbackCsv = path.resolve(process.cwd(), "output", `${jobId}.csv`);
+      console.log(`[getStatus] Fallback CSV path: ${fallbackCsv}`);
       if (fs.existsSync(fallbackCsv)) {
+        console.log(`[getStatus] Found CSV file at fallback path, returning complete status`);
         return res.status(200).json({ jobId, status: "complete", result: fallbackCsv });
       }
-
+      
       // If we reach here, no record or CSV found — return 404 (don't hang)
+      console.log(`[getStatus] No record or CSV found for jobId: ${jobId}, returning 404`);
       return res.status(404).json({ error: `Job not found: ${jobId}` });
     } catch (error) {
+      console.error(`[getStatus] Unexpected error:`, error);
       res.status(500).json({ error: error.message });
     }
   }
