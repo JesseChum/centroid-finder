@@ -92,7 +92,6 @@ processVideo(req, res) {
   },
 
   // GET /api/status/:jobId
-  // GET /api/status/:jobId
   getStatus(req, res) {
     const { jobId } = req.params;
     if (!jobId) {
@@ -118,6 +117,7 @@ processVideo(req, res) {
           }
         } catch (e) {
           console.error("Failed to parse status.json", e);
+          res.status(500).json({ error: e.message })
           // fallthrough to CSV check
         }
       }
