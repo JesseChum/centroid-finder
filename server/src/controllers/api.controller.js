@@ -31,7 +31,7 @@ export const videoController = {
     }
 
     // Step 2: Check if video file exists
-    const videoPath = path.join("..", "src", "main", "resources", `${videoName}.mp4`);
+    const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
     if (!fs.existsSync(videoPath)) {
       return res.status(404).json({ error: "Video not found" });
     }
