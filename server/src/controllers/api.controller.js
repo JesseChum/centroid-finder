@@ -36,12 +36,6 @@ processVideo(req, res) {
       return res.status(404).json({ error: "Video not found" });
     }
 
-    const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
-    const outputCsv = path.join("..", "output", `${videoName}.csv`);
-    const targetColor = "255,0,0";
-    const threshold = "30";
-    const jobId = videoName;
-
     // Step 3: Generate thumbnail (if possible). If thumbnail generation fails (for
     // example missing JavaFX runtime), continue and only log the error — do not
     // abort the processing job.
@@ -78,7 +72,7 @@ processVideo(req, res) {
           thumbnail: thumbnail
         });
       });
-  }
+  },
 
   // GET /api/status/:jobId
   getStatus(req, res) {
