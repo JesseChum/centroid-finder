@@ -99,8 +99,10 @@ processVideo(req, res) {
     }
 
     try {
-      // First look up the job in status.json
-      const statusFile = path.join("src", "processed", "status.json");
+      // Use an absolute path (based on current working dir) so behavior is stable
+      const statusFile = path.resolve(process.cwd(), "src", "processed", "status.json");
+
+      // If we have a status file, try to find the job record
       if (fs.existsSync(statusFile)) {
         try {
           const raw = fs.readFileSync(statusFile, "utf8");
@@ -108,7 +110,7 @@ processVideo(req, res) {
           const rec = list.find(r => String(r.jobId) === String(jobId));
           if (rec) {
             // If CSV exists, augment the record with result path
-            const csvPath = path.join("..", "output", `${jobId}.csv`);
+            const csvPath = path.resolve(process.cwd(), "output", `${jobId}.csv`);
             if (fs.existsSync(csvPath)) {
               rec.status = rec.status === 'processing' ? 'complete' : rec.status;
               rec.result = csvPath;
@@ -117,10 +119,19 @@ processVideo(req, res) {
           }
         } catch (e) {
           console.error("Failed to parse status.json", e);
-          res.status(500).json({ error: e.message })
-          // fallthrough to CSV check
+          // If parsing fails, continue to CSV fallback below instead of hanging
         }
       }
+
+      // Fallback: check for an output CSV with the jobId name (handles jobs
+      // that were not written into status.json for any reason).
+      const fallbackCsv = path.resolve(process.cwd(), "output", `${jobId}.csv`);
+      if (fs.existsSync(fallbackCsv)) {
+        return res.status(200).json({ jobId, status: "complete", result: fallbackCsv });
+      }
+
+      // If we reach here, no record or CSV found — return 404 (don't hang)
+      return res.status(404).json({ error: `Job not found: ${jobId}` });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
