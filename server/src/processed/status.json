@@ -1,0 +1,56 @@
+[
+  {
+    "jobId": 1,
+    "status": "processing"
+  },
+  {
+    "jobId": 2,
+    "status": "done",
+    "result": "/results/intro.mp4.csv"
+  },
+  {
+    "jobId": 3,
+    "status": "error",
+    "error": "Error processing video: Unexpected error"
+  },
+  {
+    "jobId": "ensantina-1762843911015",
+    "videoName": "ensantina",
+    "status": "processing",
+    "createdAt": "2025-11-11T06:51:51.015Z",
+    "threshold": "30",
+    "color": "#FF0000"
+  },
+  {
+    "jobId": "ensantina-1762843913668",
+    "videoName": "ensantina",
+    "status": "processing",
+    "createdAt": "2025-11-11T06:51:53.668Z",
+    "threshold": "30",
+    "color": "#FF0000"
+  },
+  {
+    "jobId": "ensantina-1762843915596",
+    "videoName": "ensantina",
+    "status": "processing",
+    "createdAt": "2025-11-11T06:51:55.597Z",
+    "threshold": "30",
+    "color": "#FF0000"
+  },
+  {
+    "jobId": "ensantina-1762843918559",
+    "videoName": "ensantina",
+    "status": "processing",
+    "createdAt": "2025-11-11T06:51:58.560Z",
+    "threshold": "30",
+    "color": "#FF0000"
+  },
+  {
+    "jobId": "ensantina-1762843920216",
+    "videoName": "ensantina",
+    "status": "processing",
+    "createdAt": "2025-11-11T06:52:00.216Z",
+    "threshold": "30",
+    "color": "#FF0000"
+  }
+]
