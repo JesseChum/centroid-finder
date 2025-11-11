@@ -92,32 +92,37 @@ processVideo(req, res) {
   },
 
   // GET /api/status/:jobId
+  // GET /api/status/:jobId
   getStatus(req, res) {
-    const { jobId } = req.params; //maing sure job id was provided
-
+    const { jobId } = req.params;
     if (!jobId) {
       return res.status(404).json({ error: "No job ID provided" });
     }
 
     try {
-      //defining the paths
-      const outputDir = path.join("output");
-      const csvPath = path.join(outputDir, `${jobId}.csv`);
-
-    if (fs.existsSync(csvPath)) {
-      return res.status(200).json({
-        status: "done",
-        result: `/results/${jobId}.csv`
-      });
-    }
-    
-    return res.status(200).json({
-      status: "processing"
-    });
-
-  } catch (error) {
-    console.error("Error fetching job status:", error);
-    return res.status(500).json({error: "Error fetching job status"});
+      // First look up the job in status.json
+      const statusFile = path.join("src", "processed", "status.json");
+      if (fs.existsSync(statusFile)) {
+        try {
+          const raw = fs.readFileSync(statusFile, "utf8");
+          const list = JSON.parse(raw || "[]");
+          const rec = list.find(r => String(r.jobId) === String(jobId));
+          if (rec) {
+            // If CSV exists, augment the record with result path
+            const csvPath = path.join("..", "output", `${jobId}.csv`);
+            if (fs.existsSync(csvPath)) {
+              rec.status = rec.status === 'processing' ? 'complete' : rec.status;
+              rec.result = csvPath;
+            }
+            return res.status(200).json(rec);
+          }
+        } catch (e) {
+          console.error("Failed to parse status.json", e);
+          // fallthrough to CSV check
+        }
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   }
 };
