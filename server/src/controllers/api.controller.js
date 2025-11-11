@@ -3,26 +3,27 @@ import path from "path";
 import { exec } from "child_process";
 
 export const videoController = {
-    getAllVideos(req, res){
-        try {
-            const videosPath = path.join("..", "processor", "src", "main", "resources");
-            if (!fs.existsSync(videosPath)) {
-                return res.status(404).json({ error: "Videos folder not found" });
-            }
-            
-            // Get all .mp4 files from the resources folder
-            const files = fs.readdirSync(videosPath);
-            const videoNames = files
-                .filter(file => file.endsWith(".mp4"))
-                .map(file => file.replace(".mp4", ""));
-            
-            res.status(200).json(videoNames);
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    },
-    
-processVideo(req, res) {
+  getAllVideos(req, res) {
+    try {
+      const videosPath = path.join("..", "processor", "src", "main", "resources");
+      if (!fs.existsSync(videosPath)) {
+        return res.status(404).json({ error: "Videos folder not found" });
+      }
+
+      // Get all .mp4 files from the resources folder
+      const files = fs.readdirSync(videosPath);
+      const videoNames = files
+        .filter(file => file.endsWith(".mp4"))
+        .map(file => file.replace(".mp4", ""));
+
+      res.status(200).json(videoNames);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  // POST /api/process/:videoName
+  processVideo(req, res) {
     const { videoName } = req.params;
 
     // Step 1: Check for video name
@@ -36,27 +37,31 @@ processVideo(req, res) {
       return res.status(404).json({ error: "Video not found" });
     }
 
-    // Step 3: Generate thumbnail (if possible). If thumbnail generation fails (for
-    // example missing JavaFX runtime), continue and only log the error — do not
-    // abort the processing job.
-    const thumbCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
-    exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
-      if (thumbError) {
-        console.warn("Thumbnail generation failed", thumbStderr);
-      }
-    });
-
-    // run the binarizer
-  },
-
-  startProcess(req, res){
-    // change this to actually grab the query parameters
+    //  Step 3: Define paths & job details
     const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
     const outputCsv = path.join("..", "output", `${videoName}.csv`);
     const targetColor = "255,0,0";
     const threshold = "30";
     const jobId = videoName;
 
+    // Step 4: Generate thumbnail
+    const thumbCommand = `java --enable-native-access=ALL-UNNAMED --module-path "../javafx-sdk-25.0.1/lib" --add-modules javafx.controls,javafx.fxml,javafx.media -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
+    exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
+      if (thumbError) {
+  console.error("🧠 Thumbnail generation failed!");
+  console.error("Command:", thumbCommand);
+  console.error("Error message:", thumbError.message);
+  console.error("Standard error output:", thumbStderr);
+  console.error("Standard output:", thumbOutput);
+  return res.status(500).json({ 
+    error: "Could not make thumbnail",
+    details: thumbError.message
+  });
+}
+
+      console.log("Thumbnail generation successful:", thumbOutput.trim());
+
+      // Step 5: Start processing job
       const processCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.VideoApp "${videoPath}" "${outputCsv}" "${targetColor}" "${threshold}"`;
       exec(processCommand, (jobError, jobOutput, jobStderr) => {
         if (jobError) {
@@ -64,14 +69,15 @@ processVideo(req, res) {
           return res.status(400).json({ error: "Could not start job" });
         }
 
-        const thumbnail = thumbOutput && typeof thumbOutput === 'string' ? thumbOutput.trim() : null;
+        // Step 6: Return success
         res.status(200).json({
           message: "Video processed successfully",
           video: videoName,
           jobId: jobId,
-          thumbnail: thumbnail
+          thumbnail: thumbOutput.trim()
         });
       });
+    });
   },
 
   // GET /api/status/:jobId

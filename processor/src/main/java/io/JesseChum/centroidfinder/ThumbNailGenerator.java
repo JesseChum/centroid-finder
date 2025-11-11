@@ -1,6 +1,7 @@
 package io.jessechum.centroidfinder;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.image.WritableImage;
@@ -22,39 +23,44 @@ public class ThumbNailGenerator extends Application {
         try {
             File videoFile = new File(videoPath);
             if (!videoFile.exists()) {
-                System.err.println("Video not found: " + videoPath);
-                System.exit(1);
+                System.err.println(" Video not found: " + videoPath);
+                Platform.exit();
+                return;
             }
-            //1.recieve a video
-            // Load video
+
             Media media = new Media(videoFile.toURI().toString());
             MediaPlayer player = new MediaPlayer(media);
             MediaView mediaView = new MediaView(player);
 
+            StackPane root = new StackPane(mediaView);
+            Scene scene = new Scene(root, 640, 360);
+            stage.setScene(scene);
+            stage.setTitle("Thumbnail Generator");
+            stage.show();
+
             player.setOnReady(() -> {
                 try {
-                    //2. grab first frame
-                    // Wait until first frame is ready
                     WritableImage image = new WritableImage(640, 360);
                     mediaView.snapshot(null, image);
 
-                    // Save thumbnail
-                    File output = new File("thumbnail.png");
-                    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", output);
+                    File outputDir = new File("output");
+                    if (!outputDir.exists()) outputDir.mkdir();
 
-                    System.out.println("thumbnail.png");
-                    System.exit(0);
+                    File outputFile = new File(outputDir, "thumbnail.png");
+                    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", outputFile);
+
+                    System.out.println(" Thumbnail saved at: " + outputFile.getAbsolutePath());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.exit(2);
+                } finally {
+                    Platform.exit();
                 }
             });
 
             player.play();
-            new Scene(new StackPane(mediaView), 640, 360);
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(3);
+            Platform.exit();
         }
     }
 
@@ -67,4 +73,3 @@ public class ThumbNailGenerator extends Application {
         launch(args);
     }
 }
-    
