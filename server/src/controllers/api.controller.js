@@ -1,29 +1,28 @@
 import fs from "fs";
 import path from "path";
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 
 export const videoController = {
-  getAllVideos(req, res) {
-    try {
-      const videosPath = path.join("..", "processor", "src", "main", "resources");
-      if (!fs.existsSync(videosPath)) {
-        return res.status(404).json({ error: "Videos folder not found" });
-      }
-
-      // Get all .mp4 files from the resources folder
-      const files = fs.readdirSync(videosPath);
-      const videoNames = files
-        .filter(file => file.endsWith(".mp4"))
-        .map(file => file.replace(".mp4", ""));
-
-      res.status(200).json(videoNames);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-
-  // POST /api/process/:videoName
-  processVideo(req, res) {
+    getAllVideos(req, res){
+        try {
+            const videosPath = path.join("..", "processor", "src", "main", "resources");
+            if (!fs.existsSync(videosPath)) {
+                return res.status(404).json({ error: "Videos folder not found" });
+            }
+            
+            // Get all .mp4 files from the resources folder
+            const files = fs.readdirSync(videosPath);
+            const videoNames = files
+                .filter(file => file.endsWith(".mp4"))
+                .map(file => file.replace(".mp4", ""));
+            
+            res.status(200).json(videoNames);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    
+processVideo(req, res) {
     const { videoName } = req.params;
 
     // Step 1: Check for video name
@@ -37,47 +36,54 @@ export const videoController = {
       return res.status(404).json({ error: "Video not found" });
     }
 
-    //  Step 3: Define paths & job details
+    // Step 3: Generate thumbnail (if possible). If thumbnail generation fails (for
+    // example missing JavaFX runtime), continue and only log the error — do not
+    // abort the processing job.
     const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
-    const outputCsv = path.join("..", "output", `${videoName}.csv`);
-    const targetColor = "255,0,0";
-    const threshold = "30";
-    const jobId = videoName;
-
-    // Step 4: Generate thumbnail
-    const thumbCommand = `java --enable-native-access=ALL-UNNAMED --module-path "../javafx-sdk-25.0.1/lib" --add-modules javafx.controls,javafx.fxml,javafx.media -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
+    const thumbCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
     exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
       if (thumbError) {
-  console.error("🧠 Thumbnail generation failed!");
-  console.error("Command:", thumbCommand);
-  console.error("Error message:", thumbError.message);
-  console.error("Standard error output:", thumbStderr);
-  console.error("Standard output:", thumbOutput);
-  return res.status(500).json({ 
-    error: "Could not make thumbnail",
-    details: thumbError.message
-  });
-}
-
-      console.log("Thumbnail generation successful:", thumbOutput.trim());
-
-      // Step 5: Start processing job
-      const processCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.VideoApp "${videoPath}" "${outputCsv}" "${targetColor}" "${threshold}"`;
-      exec(processCommand, (jobError, jobOutput, jobStderr) => {
-        if (jobError) {
-          console.error("Error starting job:", jobStderr);
-          return res.status(400).json({ error: "Could not start job" });
-        }
-
-        // Step 6: Return success
-        res.status(200).json({
-          message: "Video processed successfully",
-          video: videoName,
-          jobId: jobId,
-          thumbnail: thumbOutput.trim()
-        });
-      });
+        console.warn("Thumbnail generation failed", thumbStderr);
+      }
     });
+
+    // run the binarizer
+  },
+
+  // POST /process/:videoName
+  // Starts processing in a detached background Java process and immediately
+  // returns a jobId. Expects JSON body with optional `threshold` and `color`.
+  startProcess(req, res) {
+    const { videoName } = req.params;
+    const { threshold, color } = req.body || {};
+
+    if (!videoName) {
+      return res.status(400).json({ error: "No video name provided" });
+    }
+
+    const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
+    if (!fs.existsSync(videoPath)) {
+      return res.status(404).json({ error: "Video not found" });
+    }
+
+    const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
+    const outputCsv = path.join("..", "output", `${videoName}.csv`);
+    const targetColor = color;
+    const thr = threshold
+
+    const jobId = `${videoName}-${Date.now()}`;
+
+    // Build java args and spawn detached process so we return immediately.
+    const args = ["-cp", jarPath, "io.jessechum.centroidfinder.VideoApp", videoPath, outputCsv, targetColor, thr];
+    try {
+      const child = spawn("java", args, { detached: true, stdio: "ignore" });
+      child.unref();
+
+      return res.status(202).json({ jobId });
+    } catch (err) {
+      console.error("Failed to start processing job:", err);
+      return res.status(500).json({ error: "Failed to start job" });
+    }
   },
 
   // GET /api/status/:jobId
@@ -103,44 +109,4 @@ export const videoController = {
     }
   }
 };
-
-// Return a thumbnail for a given video filename (without extension)
-  // getThumbnail(req, res) {
-  //   const { filename } = req.params;
-  //   if (!filename) return res.status(404).json({ error: "No video name" });
-
-  //   try {
-  //     const videoPath = path.join("videos", `${filename}.mp4`);
-  //     if (!fs.existsSync(videoPath)) {
-  //       return res.status(404).json({ error: "Video not found" });
-  //     }
-
-  //     exec(`java -jar videoProcessor.jar thumbnail ${videoPath}`, (err, stdout) => {
-  //       if (err) return res.status(500).json({ error: "Error generating thumbnail" });
-  //       const thumbnail = stdout.trim();
-  //       res.status(200).json({ thumbnail });
-  //     });
-  //   } catch (error) {
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // },
-
-  // Start processing job for a given video filename (without extension)
-  // startJob(req, res) {
-  //   const { filename } = req.params;
-  //   if (!filename) return res.status(404).json({ error: "No video name" });
-
-  //   try {
-  //     const videoPath = path.join("videos", `${filename}.mp4`);
-  //     if (!fs.existsSync(videoPath)) {
-  //       return res.status(404).json({ error: "Video not found" });
-  //     }
-
-  //     exec(`java -jar videoProcessor.jar start ${filename}`, (err, stdout) => {
-  //       if (err) return res.status(400).json({ error: "Command failed" });
-  //       res.status(200).json({ jobId: stdout.trim() });
-  //     });
-  //   } catch (error) {
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // },
+  

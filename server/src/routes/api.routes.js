@@ -6,10 +6,10 @@ export const apiRouter = express.Router();
 // Define routes
 apiRouter.get("/videos", videoController.getAllVideos);
 
-//changed the two down here commented out the original 4th router
-//commented out original thumbnail
-// apiRouter.get("/api/thumbnail/:filename", videoController.getThumbnail);
-apiRouter.post("/process/:videoName", videoController.processVideo);
+apiRouter.get("/thumbnail/:videoName", videoController.processVideo);
+
+// start process - starts the actual job
+apiRouter.post("/process/:videoName", videoController.startProcess);
 
 //original 
 // apiRouter.post("/process/:jobId/status", videoController.getStatus);
