@@ -40,13 +40,18 @@ processVideo(req, res) {
     // example missing JavaFX runtime), continue and only log the error — do not
     // abort the processing job.
     const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
-    const thumbCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
+    const thumbCommand = `java --enable-native-access=ALL-UNNAMED --module-path "../javafx-sdk-25.0.1/lib" --add-modules javafx.controls,javafx.fxml,javafx.media -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
     exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
       if (thumbError) {
         console.warn("Thumbnail generation failed", thumbStderr);
+        return res.status(500).json({ error: "Thumbnail generation failed" });
       }
+      console.log("Thumbnail generation complete:", thumbOutput);
+    return res.status(200).json({
+      message: "Thumbnail generated successfully",
+      output: thumbOutput.trim()
+      });
     });
-
     // run the binarizer
   },
 
