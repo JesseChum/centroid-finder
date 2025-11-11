@@ -57,20 +57,35 @@
     <artifactId>javafx-swing</artifactId>
     <version>22.0.2</version>
 </dependency>
+<dependency>
+  <groupId>org.openjfx</groupId>
+  <artifactId>javafx-controls</artifactId>
+  <version>22</version>
+</dependency>
+<dependency>
+  <groupId>org.openjfx</groupId>
+  <artifactId>javafx-media</artifactId>
+  <version>22</version>
+</dependency>
+<dependency>
+  <groupId>org.openjfx</groupId>
+  <artifactId>javafx-fxml</artifactId>
+  <version>22</version>
+</dependency>
 </dependencies>
 
 <build>
   <plugins>
 
     <!-- Optional: lets you run the app directly via mvn exec:java -->
-    <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>exec-maven-plugin</artifactId>
-      <version>3.1.0</version>
-      <configuration>
-        <mainClass>io.jessechum.centroidfinder.VideoApp</mainClass>
-      </configuration>
-    </plugin>
+   <plugin>
+  <groupId>org.openjfx</groupId>
+  <artifactId>javafx-maven-plugin</artifactId>
+  <version>0.0.8</version>
+  <configuration>
+    <mainClass>io.jessechum.centroidfinder.ThumbNailGenerator</mainClass>
+  </configuration>
+</plugin>
 
     <!-- JavaFX support (optional for local runs) -->
     <plugin>
