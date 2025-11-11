@@ -84,6 +84,24 @@ processVideo(req, res) {
       const child = spawn("java", args, { detached: true, stdio: "ignore" });
       child.unref();
 
+       try {
+        const statusFile = path.join("src", "processed", "status.json");
+        let statuses = [];
+        if (fs.existsSync(statusFile)) {
+          const raw = fs.readFileSync(statusFile, "utf8");
+          try { statuses = JSON.parse(raw || "[]"); } catch (e) { statuses = []; }
+        }
+
+        const entry = {
+          jobId,
+          videoName,
+          status: "processing",
+        };
+        statuses.push(entry);
+        fs.writeFileSync(statusFile, JSON.stringify(statuses, null, 2), "utf8");
+      } catch (e) {
+        console.error("Failed to write status entry:", e);
+      }
       return res.status(202).json({ jobId });
     } catch (err) {
       console.error("Failed to start processing job:", err);
