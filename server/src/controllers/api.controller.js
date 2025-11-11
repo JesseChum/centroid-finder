@@ -5,16 +5,21 @@ import { exec } from "child_process";
 export const videoController = {
     getAllVideos(req, res){
         try {
-            const dataPath = path.join("src", "seed", "videos.json");
-              if (!fs.existsSync(dataPath)) {
-                return res.status(404).json({ error: "Video list not found" });
+            const videosPath = path.join("..", "processor", "src", "main", "resources");
+            if (!fs.existsSync(videosPath)) {
+                return res.status(404).json({ error: "Videos folder not found" });
+            }
+            
+            // Get all .mp4 files from the resources folder
+            const files = fs.readdirSync(videosPath);
+            const videoNames = files
+                .filter(file => file.endsWith(".mp4"))
+                .map(file => file.replace(".mp4", ""));
+            
+            res.status(200).json(videoNames);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
         }
-         const videos = JSON.parse(fs.readFileSync(dataPath, "utf8"));
-      const names = videos.map(v => v.name);
-      res.status(200).json(names);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
     },
     
    processVideo(req, res) {
