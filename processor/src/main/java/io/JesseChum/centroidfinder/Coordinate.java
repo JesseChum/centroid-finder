@@ -1,4 +1,4 @@
-package io.JesseChum.centroidfinder;
+package io.jessechum.centroidfinder;
 
 /**
  * Represents a location in an image or array

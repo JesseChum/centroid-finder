@@ -1,4 +1,4 @@
-package io.JesseChum.centroidfinder;
+package io.jessechum.centroidfinder;
 
 public class VideoParser {
     private final String inputPath;

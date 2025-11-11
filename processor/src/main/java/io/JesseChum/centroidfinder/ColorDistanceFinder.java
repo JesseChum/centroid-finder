@@ -1,4 +1,4 @@
-package io.JesseChum.centroidfinder;
+package io.jessechum.centroidfinder;
 
 /**
  * Defines an interface for computing the distance between two colors.

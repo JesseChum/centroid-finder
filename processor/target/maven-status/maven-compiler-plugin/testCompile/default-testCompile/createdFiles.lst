@@ -1,7 +1,7 @@
-io\JesseChum\centroidfinder\DistanceImageBianarizerTest.class
-io\JesseChum\centroidfinder\EuclideanColorDistanceTest.class
-io\JesseChum\centroidfinder\VideoFrameAnalyzer.class
-io\JesseChum\centroidfinder\EuclideanColorDistanceTests.class
-io\JesseChum\centroidfinder\DfsBinaryTests.class
-io\JesseChum\centroidfinder\DistanceImageBianarizerTest$MockDistanceFinder.class
-io\JesseChum\centroidfinder\VideoParserTest.class
+io\jessechum\centroidfinder\DistanceImageBianarizerTest$MockDistanceFinder.class
+io\jessechum\centroidfinder\VideoFrameAnalyzer.class
+io\jessechum\centroidfinder\VideoParserTest.class
+io\jessechum\centroidfinder\EuclideanColorDistanceTest.class
+io\jessechum\centroidfinder\DfsBinaryTests.class
+io\jessechum\centroidfinder\EuclideanColorDistanceTests.class
+io\jessechum\centroidfinder\DistanceImageBianarizerTest.class

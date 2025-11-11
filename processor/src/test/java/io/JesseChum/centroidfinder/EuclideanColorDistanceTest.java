@@ -1,4 +1,4 @@
-package io.JesseChum.centroidfinder;
+package io.jessechum.centroidfinder;
 
 import org.junit.Test;
 import static org.junit.Assert.*;

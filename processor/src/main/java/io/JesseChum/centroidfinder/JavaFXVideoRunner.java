@@ -1,4 +1,4 @@
-package io.JesseChum.centroidfinder;
+package io.jessechum.centroidfinder;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;

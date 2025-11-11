@@ -1,4 +1,4 @@
- package io.JesseChum.centroidfinder;
+ package io.jessechum.centroidfinder;
 
 public class VideoProcessor {
     private final String inputPath;

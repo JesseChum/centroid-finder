@@ -1,4 +1,4 @@
-package io.JesseChum.centroidfinder;
+package io.jessechum.centroidfinder;
 /**
  * Represents a group of contiguous pixels in an image.
  * The top-left cell of the array (row:0, column:0) is considered to be coordinate (x:0, y:0).
