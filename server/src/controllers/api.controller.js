@@ -42,15 +42,18 @@ export const videoController = {
     const threshold = "30";
     const jobId = videoName;
 
-    // Step 3: Generate thumbnail
+    // Step 3: Generate thumbnail (if possible). If thumbnail generation fails (for
+    // example missing JavaFX runtime), continue and only log the error — do not
+    // abort the processing job.
     const thumbCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
     exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
       if (thumbError) {
-        console.error("Error making thumbnail:", thumbStderr);
-        return res.status(500).json({ error: "Could not make thumbnail" });
+        // Log the thumbnail error but continue processing the video. This avoids
+        // failing the whole request when the environment lacks JavaFX.
+        console.warn("Thumbnail generation failed, skipping thumbnail:", thumbStderr);
       }
 
-      // Step 4: Start job
+      // Step 4: Start job (always run regardless of thumbnail result)
       const processCommand = `java -cp "${jarPath}" io.jessechum.centroidfinder.VideoApp "${videoPath}" "${outputCsv}" "${targetColor}" "${threshold}"`;
       exec(processCommand, (jobError, jobOutput, jobStderr) => {
         if (jobError) {
@@ -58,12 +61,14 @@ export const videoController = {
           return res.status(400).json({ error: "Could not start job" });
         }
 
-        // Step 5: Return success
+        // Step 5: Return success. Use thumbnail output when available, otherwise
+        // return null for thumbnail.
+        const thumbnail = thumbOutput && typeof thumbOutput === 'string' ? thumbOutput.trim() : null;
         res.status(200).json({
           message: "Video processed successfully",
           video: videoName,
           jobId: jobId,
-          thumbnail: thumbOutput.trim()
+          thumbnail: thumbnail
         });
       });
     });
