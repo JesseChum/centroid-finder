@@ -84,54 +84,40 @@ processVideo(req, res) {
       const child = spawn("java", args, { detached: true, stdio: "ignore" });
       child.unref();
 
-      // Write an entry to status.json so jobs can be tracked
-      try {
-        const statusFile = path.join("src", "processed", "status.json");
-        let statuses = [];
-        if (fs.existsSync(statusFile)) {
-          const raw = fs.readFileSync(statusFile, "utf8");
-          try { statuses = JSON.parse(raw || "[]"); } catch (e) { statuses = []; }
-        }
-
-        const entry = {
-          jobId,
-          videoName,
-          status: "processing",
-        };
-        statuses.push(entry);
-        fs.writeFileSync(statusFile, JSON.stringify(statuses, null, 2), "utf8");
-      } catch (e) {
-        console.error("Failed to write status entry:", e);
-      }
       return res.status(202).json({ jobId });
-        
     } catch (err) {
       console.error("Failed to start processing job:", err);
       return res.status(500).json({ error: "Failed to start job" });
-      
     }
   },
 
   // GET /api/status/:jobId
   getStatus(req, res) {
-    const { jobId } = req.params;
+    const { jobId } = req.params; //maing sure job id was provided
+
     if (!jobId) {
       return res.status(404).json({ error: "No job ID provided" });
     }
 
     try {
-      const csvPath = path.join("..", "output", `${jobId}.csv`);
-      if (!fs.existsSync(csvPath)) {
-        return res.status(200).json({ status: "processing" });
-      }
+      //defining the paths
+      const outputDir = path.join("output");
+      const csvPath = path.join(outputDir, `${jobId}.csv`);
 
-      const csvData = fs.readFileSync(csvPath, "utf8");
+    if (fs.existsSync(csvPath)) {
       return res.status(200).json({
-        status: "complete",
-        data: csvData
+        status: "done",
+        result: `/results/${jobId}.csv`
       });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+    }
+    
+    return res.status(200).json({
+      status: "processing"
+    });
+
+  } catch (error) {
+    console.error("Error fetching job status:", error);
+    return res.status(500).json({error: "Error fetching job status"});
     }
   }
 };
