@@ -1,0 +1,33 @@
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Java
+processor/target
+processor/src/main/resources/**/*.mp4
+
+# Logs
+*.log
+logs/
+debug.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Output folders
+server/output
+server/src/processed/status.json
+
+# IDE stuff
+.vscode
+.idea
+
+# Docker
+Dockerfile
+dockerPlan.md
