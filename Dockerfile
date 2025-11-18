@@ -35,7 +35,7 @@ COPY server/ .
 ### Stage 3: Runtime image (JRE + Node)
 FROM eclipse-temurin:24-jre-alpine
 # Ensure both node and npm are available in the runtime image
-RUN apk add --no-cache nodejs npm
+RUN apk add --no-cache nodejs npm openssl
 
 # non-root user for runtime
 RUN addgroup -S app && adduser -S -G app app
