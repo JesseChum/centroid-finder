@@ -34,14 +34,17 @@ COPY server/ .
 
 ### Stage 3: Runtime image (JRE + Node)
 FROM eclipse-temurin:24-jre-alpine
-# Ensure both node and npm are available in the runtime image
-RUN apk add --no-cache nodejs npm openssl
+
+# FIX for Alpine SSL issues: switch HTTPS → HTTP
+RUN sed -i 's/https/http/' /etc/apk/repositories
+
+# Install node and npm
+RUN apk update && apk add --no-cache nodejs npm openssl
 
 # non-root user for runtime
 RUN addgroup -S app && adduser -S -G app app
 WORKDIR /app
 
-# copy prepared server (including node_modules) and the built JAR
 COPY --from=node-builder /build/server /app/server
 COPY --from=maven-builder /build/processor/target/app.jar /app/processor/app.jar
 
@@ -51,7 +54,6 @@ ENV JAR_PATH=/app/processor/app.jar \
     NODE_ENV=production \
     PORT=3000
 
-# data directories
 RUN mkdir -p /app/data /videos /results \
     && chown -R app:app /app /videos /results
 
@@ -61,5 +63,4 @@ WORKDIR /app/server
 EXPOSE 3000
 VOLUME ["/videos", "/results", "/app/data"]
 
-# run the server (expects a "start" script in package.json or main entrypoint)
 CMD ["npm", "start"]
