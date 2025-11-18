@@ -46,8 +46,8 @@ COPY --from=node-builder /build/server /app/server
 COPY --from=maven-builder /build/processor/target/app.jar /app/processor/app.jar
 
 ENV JAR_PATH=/app/processor/app.jar \
-    VIDEOS_DIR=/videos \
-    RESULTS_DIR=/results \
+    VIDEOS_DIRECTORY=/videos \
+    RESULTS_DIRECTORY=/results \
     NODE_ENV=production \
     PORT=3000
 

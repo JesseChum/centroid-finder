@@ -1,299 +1,178 @@
-// import fs from "fs";
-// import path from "path";
-// import { exec, spawn } from "child_process";
-
-// export const videoController = {
-//     getAllVideos(req, res){
-//         try {
-//            const videosDir = process.env.VIDEOS_DIR;
-//             // const videosPath = path.join("..", "processor", "src", "main", "resources");
-//             if (!fs.existsSync(videosPath)) {
-//                 return res.status(404).json({ error: "Videos directory not found" });
-//             }
-            
-//             // Get all .mp4 files from the resources folder
-//             const files = fs.readdirSync(videosPath);
-//             const videoNames = files
-//                 .filter(file => file.endsWith(".mp4"))
-//                 .map(file => file.replace(".mp4", ""));
-            
-//             res.status(200).json(videoNames);
-//         } catch (error) {
-//             res.status(500).json({ error: error.message });
-//         }
-//     },
-    
-// processVideo(req, res) {
-//     const { videoName } = req.params;
-
-//     // Step 1: Check for video name
-//     if (!videoName) {
-//       return res.status(404).json({ error: "No video name provided" });
-//     }
-
-//     // Step 2: Check if video file exists
-//     const videoPath = path.join(process.env.VIDEOS_DIR, `${videoName}.mp4`);
-//     // const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
-//     if (!fs.existsSync(videoPath)) {
-//       return res.status(404).json({ error: "Video not found" });
-//     }
-
-//     // Step 3: Generate thumbnail (if possible). If thumbnail generation fails (for
-//     // example missing JavaFX runtime), continue and only log the error — do not
-//     // abort the processing job.
-//     const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
-//     const thumbCommand = `java --enable-native-access=ALL-UNNAMED --module-path "../javafx-sdk-25.0.1/lib" --add-modules javafx.controls,javafx.fxml,javafx.media -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
-//     exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
-//       if (thumbError) {
-//         console.warn("Thumbnail generation failed", thumbStderr);
-//         return res.status(500).json({ error: "Thumbnail generation failed" });
-//       }
-//       console.log("Thumbnail generation complete:", thumbOutput);
-//     return res.status(200).json({
-//       message: "Thumbnail generated successfully",
-//       output: thumbOutput.trim()
-//       });
-//     });
-//     // run the binarizer
-//   },
-
-//   // POST /process/:videoName
-//   // Starts processing in a detached background Java process and immediately
-//   // returns a jobId. Expects JSON body with optional `threshold` and `color`.
-//   startProcess(req, res) {
-//     const { videoName } = req.params;
-//     const { threshold, color } = req.body || {};
-
-//     if (!videoName) {
-//       return res.status(400).json({ error: "No video name provided" });
-//     }
-
-//     //const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
-//     const videoPath = path.join(process.env.VIDEOS_DIR, `${videoName}.mp4`);
-//     if (!fs.existsSync(videoPath)) {
-//       return res.status(404).json({ error: "Video not found" });
-//     }
-//     const jarPath = process.env.JAR_PATH;
-//     const outputCsv = path.join(process.env.RESULTS_DIR, `${videoName}.csv`);
-//     //const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
-//     //const outputCsv = path.join("..", "output", `${videoName}.csv`);
-//     const targetColor = color;
-//     const thr = threshold
-
-//     const jobId = `${videoName}-${Date.now()}`;
-
-//     // Build java args and spawn detached process so we return immediately.
-//     const args = ["-cp", jarPath, "io.jessechum.centroidfinder.VideoApp", videoPath, outputCsv, targetColor, thr];
-//     try {
-//       const child = spawn("java", args, { detached: true, stdio: "ignore" });
-//       child.unref();
-
-//        try {
-//         const statusFile = path.join("src", "processed", "status.json");
-//         let statuses = [];
-//         if (fs.existsSync(statusFile)) {
-//           const raw = fs.readFileSync(statusFile, "utf8");
-//           try { statuses = JSON.parse(raw || "[]"); } catch (e) { statuses = []; }
-//         }
-
-//         const entry = {
-//           jobId,
-//           videoName,
-//           status: "processing",
-//         };
-//         statuses.push(entry);
-//         fs.writeFileSync(statusFile, JSON.stringify(statuses, null, 2), "utf8");
-//       } catch (e) {
-//         console.error("Failed to write status entry:", e);
-//       }
-//       return res.status(202).json({ jobId });
-//     } catch (err) {
-//       console.error("Failed to start processing job:", err);
-//       return res.status(500).json({ error: "Failed to start job" });
-//     }
-//   },
-
-//   // GET /api/status/:jobId
-//   getStatus(req, res) {
-//     const { jobId } = req.params;
-//     console.log(`[getStatus] Received jobId: "${jobId}" (type: ${typeof jobId})`);
-    
-//     if (!jobId) {
-//       return res.status(404).json({ error: "No job ID provided" });
-//     }
-
-//     try {
-//       // Use an absolute path (based on current working dir) so behavior is stable
-//       const statusFile = path.resolve(process.cwd(), "src", "processed", "status.json");
-//       console.log(`[getStatus] Looking for status file at: ${statusFile}`);
-
-//       // If we have a status file, try to find the job record
-//       if (fs.existsSync(statusFile)) {
-//         console.log(`[getStatus] Status file exists, reading...`);
-//         try {
-//           const raw = fs.readFileSync(statusFile, "utf8");
-//           const list = JSON.parse(raw || "[]");
-//           console.log(`[getStatus] Parsed ${list.length} entries from status.json`);
-//           console.log(`[getStatus] Entries in file:`, list.map(r => ({ jobId: r.jobId, type: typeof r.jobId })));
-          
-//           const rec = list.find(r => {
-//             const match = String(r.jobId) === String(jobId);
-//             console.log(`[getStatus] Comparing "${r.jobId}" (${typeof r.jobId}) === "${jobId}" (${typeof jobId}) => ${match}`);
-//             return match;
-//           });
-          
-//           if (rec) {
-//             console.log(`[getStatus] Found record for jobId: ${jobId}`, rec);
-//             // If CSV exists, augment the record with result path
-//             const csvPath = path.resolve(process.cwd(), "output", `${jobId}.csv`);
-//             if (fs.existsSync(csvPath)) {
-//               rec.status = rec.status === 'processing' ? 'complete' : rec.status;
-//               rec.result = csvPath;
-//             }
-//             return res.status(200).json(rec);
-//           } else {
-//             console.log(`[getStatus] No matching record found in status.json for jobId: ${jobId}`);
-//           }
-//         } catch (e) {
-//           console.error(`[getStatus] Failed to parse status.json:`, e);
-//         }
-//       } else {
-//         console.log(`[getStatus] Status file does not exist at: ${statusFile}`);
-//       }
-
-//       console.log(`[getStatus] Checking fallback CSV path for jobId: ${jobId}`);
-//       const fallbackCsv = path.resolve(process.cwd(), "output", `${jobId}.csv`);
-//       console.log(`[getStatus] Fallback CSV path: ${fallbackCsv}`);
-//       if (fs.existsSync(fallbackCsv)) {
-//         console.log(`[getStatus] Found CSV file at fallback path, returning complete status`);
-//         return res.status(200).json({ jobId, status: "complete", result: fallbackCsv });
-//       }
-      
-//       // If we reach here, no record or CSV found — return 404 (don't hang)
-//       console.log(`[getStatus] No record or CSV found for jobId: ${jobId}, returning 404`);
-//       return res.status(404).json({ error: `Job not found: ${jobId}` });
-//     } catch (error) {
-//       console.error(`[getStatus] Unexpected error:`, error);
-//       res.status(500).json({ error: error.message });
-//     }
-//   }
-// };
 import fs from "fs";
 import path from "path";
 import { exec, spawn } from "child_process";
 
 export const videoController = {
 
-    // GET /api/videos
     getAllVideos(req, res) {
-        try {
-            const videosDir = process.env.VIDEOS_DIR;
-
-            if (!fs.existsSync(videosDir)) {
-                return res.status(404).json({ error: "Videos directory not found" });
-            }
-
-            const files = fs.readdirSync(videosDir);
-            const videoNames = files
-                .filter(f => f.endsWith(".mp4"))
-                .map(f => f.replace(".mp4", ""));
-
-            return res.status(200).json(videoNames);
-
-        } catch (err) {
-            return res.status(500).json({ error: err.message });
+    try {
+        const videosPath = process.env.VIDEOS_DIRECTORY;
+        if (!fs.existsSync(videosPath)) {
+            return res.status(404).json({ error: "Videos directory not found" });
         }
-    },
+        const files = fs.readdirSync(videosPath);
+        const videoNames = files
+        .filter(f => f.endsWith(".mp4"))
+        .map(f => f.replace(".mp4", ""));
 
-    // GET /api/process/:videoName  (thumbnail DISABLED in Docker)
-    processVideo(req, res) {
-        const { videoName } = req.params;
-
-        if (!videoName) return res.status(400).json({ error: "No video name provided" });
-
-        const videoPath = path.join(process.env.VIDEOS_DIR, `${videoName}.mp4`);
-        if (!fs.existsSync(videoPath)) {
-            return res.status(404).json({ error: "Video not found" });
-        }
-
-        // Docker does not have JavaFX → skip
-        return res.status(200).json({
-            message: "Thumbnail generation is disabled in Docker."
-        });
-    },
-
-    // POST /api/start/:videoName
-    startProcess(req, res) {
-        const { videoName } = req.params;
-        const { threshold, color } = req.body || {};
-
-        if (!videoName) return res.status(400).json({ error: "No video name provided" });
-
-        const videoPath = path.join(process.env.VIDEOS_DIR, `${videoName}.mp4`);
-        if (!fs.existsSync(videoPath)) {
-            return res.status(404).json({ error: "Video not found" });
-        }
-
-        const jarPath = process.env.JAR_PATH;         // /app/processor/app.jar
-        const outputCsv = path.join(process.env.RESULTS_DIR, `${videoName}.csv`);
-
-        const jobId = `${videoName}-${Date.now()}`;
-
-        const args = [
-            "-jar", jarPath,
-            videoPath,
-            outputCsv,
-            color || "",
-            threshold || ""
-        ];
-
-        try {
-            const child = spawn("java", args, { detached: true, stdio: "ignore" });
-            child.unref();
-
-            // Save job status
-            const statusFile = path.join("src", "processed", "status.json");
-            let statuses = fs.existsSync(statusFile)
-                ? JSON.parse(fs.readFileSync(statusFile, "utf8"))
-                : [];
-
-            statuses.push({ jobId, videoName, status: "processing" });
-            fs.writeFileSync(statusFile, JSON.stringify(statuses, null, 2));
-
-            return res.status(202).json({ jobId });
-
-        } catch (err) {
-            return res.status(500).json({ error: "Failed to start job" });
-        }
-    },
-
-    // GET /api/status/:jobId
-    getStatus(req, res) {
-        const { jobId } = req.params;
-
-        const statusFile = path.resolve(process.cwd(), "src", "processed", "status.json");
-        const resultsDir = process.env.RESULTS_DIR;
-
-        if (fs.existsSync(statusFile)) {
-            const list = JSON.parse(fs.readFileSync(statusFile, "utf8"));
-            const rec = list.find(r => String(r.jobId) === String(jobId));
-
-            if (rec) {
-                const csvPath = path.join(resultsDir, `${jobId}.csv`);
-                if (fs.existsSync(csvPath)) {
-                    rec.status = "complete";
-                    rec.result = csvPath;
-                }
-                return res.status(200).json(rec);
-            }
-        }
-
-        // fallback
-        const fallbackCsv = path.join(resultsDir, `${jobId}.csv`);
-        if (fs.existsSync(fallbackCsv)) {
-            return res.status(200).json({ jobId, status: "complete", result: fallbackCsv });
-        }
-
-        return res.status(404).json({ error: `Job not found: ${jobId}` });
+        return res.status(200).json(videoNames);
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
     }
+    },
+    
+processVideo(req, res) {
+    const { videoName } = req.params;
+
+    // Step 1: Check for video name
+    if (!videoName) {
+      return res.status(404).json({ error: "No video name provided" });
+    }
+
+    // Step 2: Check if video file exists
+    const videoPath = path.join(process.env.VIDEOS_DIRECTORY, `${videoName}.mp4`);
+    // const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
+    if (!fs.existsSync(videoPath)) {
+      return res.status(404).json({ error: "Video not found" });
+    }
+
+    // Step 3: Generate thumbnail (if possible). If thumbnail generation fails (for
+    // example missing JavaFX runtime), continue and only log the error — do not
+    // abort the processing job.
+    const jarPath = process.env.JAR_PATH;
+    const thumbCommand = `java --enable-native-access=ALL-UNNAMED --module-path "../javafx-sdk-25.0.1/lib" --add-modules javafx.controls,javafx.fxml,javafx.media -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
+    exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
+      if (thumbError) {
+        console.warn("Thumbnail generation failed", thumbStderr);
+        return res.status(500).json({ error: "Thumbnail generation failed" });
+      }
+      console.log("Thumbnail generation complete:", thumbOutput);
+    return res.status(200).json({
+      message: "Thumbnail generated successfully",
+      output: thumbOutput.trim()
+      });
+    });
+    // run the binarizer
+  },
+
+  // POST /process/:videoName
+  // Starts processing in a detached background Java process and immediately
+  // returns a jobId. Expects JSON body with optional `threshold` and `color`.
+  startProcess(req, res) {
+    const { videoName } = req.params;
+    const { threshold, color } = req.body || {};
+
+    if (!videoName) {
+      return res.status(400).json({ error: "No video name provided" });
+    }
+
+    //const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
+    if (!fs.existsSync(videoPath)) {
+      return res.status(404).json({ error: "Video not found" });
+    }
+    const jarPath = process.env.JAR_PATH;
+    const outputCsv = path.join(process.env.RESULTS_DIRECTORY, `${videoName}.csv`);
+    //const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
+    //const outputCsv = path.join("..", "output", `${videoName}.csv`);
+    const targetColor = color;
+    const thr = threshold
+
+    const jobId = `${videoName}-${Date.now()}`;
+
+    // Build java args and spawn detached process so we return immediately.
+    const args = ["-cp", jarPath, "io.jessechum.centroidfinder.VideoApp", videoPath, outputCsv, targetColor, thr];
+    try {
+      const child = spawn("java", args, { detached: true, stdio: "ignore" });
+      child.unref();
+
+       try {
+        const statusFile = path.join("src", "processed", "status.json");
+        let statuses = [];
+        if (fs.existsSync(statusFile)) {
+          const raw = fs.readFileSync(statusFile, "utf8");
+          try { statuses = JSON.parse(raw || "[]"); } catch (e) { statuses = []; }
+        }
+
+        const entry = {
+          jobId,
+          videoName,
+          status: "processing",
+        };
+        statuses.push(entry);
+        fs.writeFileSync(statusFile, JSON.stringify(statuses, null, 2), "utf8");
+      } catch (e) {
+        console.error("Failed to write status entry:", e);
+      }
+      return res.status(202).json({ jobId });
+    } catch (err) {
+      console.error("Failed to start processing job:", err);
+      return res.status(500).json({ error: "Failed to start job" });
+    }
+  },
+
+    
+  // GET /api/status/:jobId
+  getStatus(req, res) {
+    const { jobId } = req.params;
+    console.log(`[getStatus] Received jobId: "${jobId}" (type: ${typeof jobId})`);
+    
+    if (!jobId) {
+      return res.status(404).json({ error: "No job ID provided" });
+    }
+
+    try {
+      // Use an absolute path (based on current working dir) so behavior is stable
+      const statusFile = path.resolve(process.cwd(), "src", "processed", "status.json");
+      console.log(`[getStatus] Looking for status file at: ${statusFile}`);
+
+      // If we have a status file, try to find the job record
+      if (fs.existsSync(statusFile)) {
+        console.log(`[getStatus] Status file exists, reading...`);
+        try {
+          const raw = fs.readFileSync(statusFile, "utf8");
+          const list = JSON.parse(raw || "[]");
+          console.log(`[getStatus] Parsed ${list.length} entries from status.json`);
+          console.log(`[getStatus] Entries in file:`, list.map(r => ({ jobId: r.jobId, type: typeof r.jobId })));
+          
+          const rec = list.find(r => {
+            const match = String(r.jobId) === String(jobId);
+            console.log(`[getStatus] Comparing "${r.jobId}" (${typeof r.jobId}) === "${jobId}" (${typeof jobId}) => ${match}`);
+            return match;
+          });
+          
+          if (rec) {
+            console.log(`[getStatus] Found record for jobId: ${jobId}`, rec);
+            // If CSV exists, augment the record with result path
+            const csvPath = path.resolve(process.cwd(), "output", `${jobId}.csv`);
+            if (fs.existsSync(csvPath)) {
+              rec.status = rec.status === 'processing' ? 'complete' : rec.status;
+              rec.result = csvPath;
+            }
+            return res.status(200).json(rec);
+          } else {
+            console.log(`[getStatus] No matching record found in status.json for jobId: ${jobId}`);
+          }
+        } catch (e) {
+          console.error(`[getStatus] Failed to parse status.json:`, e);
+        }
+      } else {
+        console.log(`[getStatus] Status file does not exist at: ${statusFile}`);
+      }
+
+      console.log(`[getStatus] Checking fallback CSV path for jobId: ${jobId}`);
+      const fallbackCsv = path.resolve(process.cwd(), "output", `${jobId}.csv`);
+      console.log(`[getStatus] Fallback CSV path: ${fallbackCsv}`);
+      if (fs.existsSync(fallbackCsv)) {
+        console.log(`[getStatus] Found CSV file at fallback path, returning complete status`);
+        return res.status(200).json({ jobId, status: "complete", result: fallbackCsv });
+      }
+      
+      // If we reach here, no record or CSV found — return 404 (don't hang)
+      console.log(`[getStatus] No record or CSV found for jobId: ${jobId}, returning 404`);
+      return res.status(404).json({ error: `Job not found: ${jobId}` });
+    } catch (error) {
+      console.error(`[getStatus] Unexpected error:`, error);
+      res.status(500).json({ error: error.message });
+    }
+  }
 };
