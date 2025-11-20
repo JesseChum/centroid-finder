@@ -2,6 +2,9 @@ import fs from "fs";
 import path from "path";
 import { exec, spawn } from "child_process";
 
+// definitely improvements to the video controller
+// its big and clunky, and doesnt handle thumbnails
+
 export const videoController = {
 
     getAllVideos(req, res) {
@@ -19,7 +22,7 @@ export const videoController = {
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
-    },
+  },
     
 processVideo(req, res) {
     const { videoName } = req.params;
@@ -31,7 +34,6 @@ processVideo(req, res) {
 
     // Step 2: Check if video file exists
     const videoPath = path.join(process.env.VIDEOS_DIRECTORY, `${videoName}.mp4`);
-    // const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
     if (!fs.existsSync(videoPath)) {
       return res.status(404).json({ error: "Video not found" });
     }
@@ -66,7 +68,7 @@ processVideo(req, res) {
       return res.status(400).json({ error: "No video name provided" });
     }
 
-    //const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
+    const videoPath = path.join(process.env.VIDEOS_DIRECTORY, `${videoName}.mp4`);
     if (!fs.existsSync(videoPath)) {
       return res.status(404).json({ error: "Video not found" });
     }
