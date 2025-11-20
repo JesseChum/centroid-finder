@@ -1,6 +1,9 @@
-package io.jessechum.centroidfinder;
+package io.JesseChum.centroidfinder;
 
 import org.junit.Test;
+
+import io.JesseChum.centroidfinder.VideoParser;
+
 import static org.junit.Assert.*;
 
 public class VideoParserTest {

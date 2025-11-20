@@ -1,8 +1,13 @@
-package io.jessechum.centroidfinder;
+package io.JesseChum.centroidfinder;
 
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import io.JesseChum.centroidfinder.Coordinate;
+import io.JesseChum.centroidfinder.DfsBinaryGroupFinder;
+import io.JesseChum.centroidfinder.Group;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

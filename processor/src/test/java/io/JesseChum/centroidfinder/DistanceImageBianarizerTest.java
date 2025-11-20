@@ -1,8 +1,12 @@
-package io.jessechum.centroidfinder;
+package io.JesseChum.centroidfinder;
 
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+
+import io.JesseChum.centroidfinder.ColorDistanceFinder;
+import io.JesseChum.centroidfinder.DistanceImageBinarizer;
+
 import java.awt.image.BufferedImage;
 
 

@@ -1,4 +1,4 @@
-package io.jessechum.centroidfinder;
+package io.JesseChum.centroidfinder;
 
 public class VideoApp {
     public static void main(String[] args) {

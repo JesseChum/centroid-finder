@@ -1,10 +1,19 @@
 
-package io.jessechum.centroidfinder;
+package io.JesseChum.centroidfinder;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Optional;
+
+import io.JesseChum.centroidfinder.BinarizingImageGroupFinder;
+import io.JesseChum.centroidfinder.BinaryGroupFinder;
+import io.JesseChum.centroidfinder.ColorDistanceFinder;
+import io.JesseChum.centroidfinder.Coordinate;
+import io.JesseChum.centroidfinder.DfsBinaryGroupFinder;
+import io.JesseChum.centroidfinder.DistanceImageBinarizer;
+import io.JesseChum.centroidfinder.Group;
+import io.JesseChum.centroidfinder.ImageBinarizer;
 
 
 // import javafx.scene.effect.Light.Point;

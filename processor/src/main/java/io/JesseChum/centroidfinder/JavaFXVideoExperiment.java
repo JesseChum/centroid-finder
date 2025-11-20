@@ -1,4 +1,4 @@
-package io.jessechum.centroidfinder;
+package io.JesseChum.centroidfinder;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

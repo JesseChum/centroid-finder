@@ -1,8 +1,10 @@
-package io.jessechum.centroidfinder;
+package io.JesseChum.centroidfinder;
 
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+
+import io.JesseChum.centroidfinder.EuclideanColorDistance;
 
 public class EuclideanColorDistanceTests {
 
