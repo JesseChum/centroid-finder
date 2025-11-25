@@ -8,13 +8,12 @@ export const videoController = {
     try {
         const videosPath = process.env.VIDEOS_DIRECTORY;
         if (!fs.existsSync(videosPath)) {
-            return res.status(404).json({ error: "Videos directory not found" });
-        }
+            return res.status(404).json({ error: "Videos directory not found", path: videosPath });
+        }       
         const files = fs.readdirSync(videosPath);
         const videoNames = files
         .filter(f => f.endsWith(".mp4"))
         .map(f => f.replace(".mp4", ""));
-
         return res.status(200).json(videoNames);
     } catch (err) {
         return res.status(500).json({ error: err.message });
