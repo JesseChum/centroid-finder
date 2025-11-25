@@ -6,7 +6,6 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import javafx.util.Duration;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.BufferedWriter;
@@ -35,6 +34,7 @@ public class FrameProcessor {
         this.step = step;
         this.outputCsv = outputCsv;
 
+        // constructor input validation 
         if (duration <= 0 || step <= 0){
             throw new IllegalArgumentException("Duration and step must be > 0");
         }
@@ -100,6 +100,7 @@ public class FrameProcessor {
     }
 
     /** Writes a row to the CSV */
+    //error handling to catch any CSV writing errors
     private void writeCsv(double time, double x, double y) {
         try {
             writer.write(String.format("%.2f,%.2f,%.2f%n", time, x, y));
@@ -109,6 +110,7 @@ public class FrameProcessor {
     }
 
     /** Clean shutdown */
+    //error hnadling to catch any writing closing errors
     private void closeWriter() {
         try {
             writer.close();
