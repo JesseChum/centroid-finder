@@ -119,6 +119,77 @@ export const videoController = {
     }
   },
 
+  // POST /binarize/:imageName
+  // Takes an existing image file, runs ImageSummaryApp to binarize it,
+  // and returns the binarized image.
+  // Expects JSON body with:
+  // - color: hex color (e.g., "FFA200"), optional, defaults to "FFA200"
+  // - threshold: integer threshold value, optional, defaults to 164
+  binarizer(req, res) {
+    const { imageName } = req.params;
+    const { color = "FFA200", threshold = 164 } = req.body || {};
+    
+    if (!imageName) {
+      return res.status(400).json({ error: "No image name provided" });
+    }
+
+    const jarPath = process.env.JAR_PATH;
+    const resultsDir = process.env.RESULTS_DIRECTORY;
+    
+    // Look for the image in the results directory (where thumbnails/frames are stored)
+    const inputPath = path.join(resultsDir, imageName);
+    
+    if (!fs.existsSync(inputPath)) {
+      console.error(`[binarizer] Image not found: ${inputPath}`);
+      return res.status(404).json({ error: "Image not found", path: inputPath });
+    }
+
+    const timestamp = Date.now();
+    const binarizedPath = path.join(resultsDir, `binarized-${timestamp}.png`);
+
+    // Run ImageSummaryApp which outputs binarized.png in the current directory
+    const command = `java -cp "${jarPath}" io.jessechum.centroidfinder.ImageSummaryApp "${inputPath}" "${color}" ${threshold}`;
+    
+    console.log(`[binarizer] Running ImageSummaryApp on ${imageName} with color=${color}, threshold=${threshold}`);
+    exec(command, { cwd: resultsDir }, (execError, execOutput, execStderr) => {
+      if (execError) {
+        console.error("[binarizer] ImageSummaryApp failed:", execStderr);
+        return res.status(500).json({ error: "Binarization failed", details: execStderr });
+      }
+
+      console.log("[binarizer] ImageSummaryApp output:", execOutput);
+
+      // ImageSummaryApp creates "binarized.png" in the working directory (resultsDir)
+      const binarizedOutputPath = path.join(resultsDir, "binarized.png");
+      
+      if (!fs.existsSync(binarizedOutputPath)) {
+        console.error("[binarizer] Binarized image not found at:", binarizedOutputPath);
+        return res.status(500).json({ error: "Binarized image not generated" });
+      }
+
+      // Rename to unique filename to avoid conflicts
+      try {
+        fs.renameSync(binarizedOutputPath, binarizedPath);
+      } catch (err) {
+        console.error("[binarizer] Failed to rename binarized image:", err);
+      }
+
+      // Send the binarized image
+      res.sendFile(path.resolve(binarizedPath), (sendErr) => {
+        // Cleanup binarized file after sending
+        try { 
+          fs.unlinkSync(binarizedPath);
+        } catch (cleanupErr) {
+          console.warn("[binarizer] Failed to cleanup binarized file:", cleanupErr);
+        }
+        
+        if (sendErr) {
+          console.error("[binarizer] Error sending file:", sendErr);
+        }
+      });
+    });
+  },
+
     
   // GET /api/status/:jobId
   // recieves a jobID through a parameter, and returns the status of the job.

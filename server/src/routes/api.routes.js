@@ -11,6 +11,9 @@ apiRouter.get("/thumbnail/:videoName", videoController.processVideo);
 // start process - starts the actual job
 apiRouter.post("/process/:videoName", videoController.startProcess);
 
+// binarize an existing image file
+apiRouter.post("/binarize/:imageName", videoController.binarizer);
+
 //original 
 // apiRouter.post("/process/:jobId/status", videoController.getStatus);
 //changed
