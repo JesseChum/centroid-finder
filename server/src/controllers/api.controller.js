@@ -4,56 +4,69 @@ import { exec, spawn } from "child_process";
 
 export const videoController = {
 
+    // Get All Videos is used by the API
+    // What it does is receieve a path from the enviornment, expected to be Docker,
+    // and scans over every file directory. It then returns an array of strings.
+    // it expects mp4 files, and tacks on '.mp4' to the end of the string before
+    // adding it to the array.
+    // Currently we only handle mp4 as the java format is set up to only 
+    // handle mp4. 
     getAllVideos(req, res) {
     try {
         const videosPath = process.env.VIDEOS_DIRECTORY;
+        console.log(`[getAllVideos] VIDEOS_DIRECTORY: "${videosPath}"`);
+        console.log(`[getAllVideos] Directory exists: ${fs.existsSync(videosPath)}`);
+        
         if (!fs.existsSync(videosPath)) {
-            return res.status(404).json({ error: "Videos directory not found" });
+            return res.status(404).json({ error: "Videos directory not found", path: videosPath });
         }
+        
         const files = fs.readdirSync(videosPath);
+        console.log(`[getAllVideos] All files found:`, files);
+        
         const videoNames = files
         .filter(f => f.endsWith(".mp4"))
         .map(f => f.replace(".mp4", ""));
 
+        console.log(`[getAllVideos] Filtered .mp4 files:`, videoNames);
         return res.status(200).json(videoNames);
     } catch (err) {
+        console.error(`[getAllVideos] Error:`, err);
         return res.status(500).json({ error: err.message });
     }
     },
     
-processVideo(req, res) {
-    const { videoName } = req.params;
+  // We recieve a video name from the API as a parameter.
+  // if it is valid, we attempt to generate a thumbnail for the video.
+  // it does so by running a command in a console that forces the JAR to 
+  // grab the first frame of the video.
+  // error handling will cause it to be skipped over, but not fail the entire call.
+  // NOTE: most due for a rework. The Binarization feature is not added
+  processVideo(req, res) {
+      const { videoName } = req.params;
 
-    // Step 1: Check for video name
-    if (!videoName) {
-      return res.status(404).json({ error: "No video name provided" });
-    }
-
-    // Step 2: Check if video file exists
-    const videoPath = path.join(process.env.VIDEOS_DIRECTORY, `${videoName}.mp4`);
-    // const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
-    if (!fs.existsSync(videoPath)) {
-      return res.status(404).json({ error: "Video not found" });
-    }
-
-    // Step 3: Generate thumbnail (if possible). If thumbnail generation fails (for
-    // example missing JavaFX runtime), continue and only log the error — do not
-    // abort the processing job.
-    const jarPath = process.env.JAR_PATH;
-    const thumbCommand = `java --enable-native-access=ALL-UNNAMED --module-path "../javafx-sdk-25.0.1/lib" --add-modules javafx.controls,javafx.fxml,javafx.media -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
-    exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
-      if (thumbError) {
-        console.warn("Thumbnail generation failed", thumbStderr);
-        return res.status(500).json({ error: "Thumbnail generation failed" });
+      if (!videoName) {
+        return res.status(404).json({ error: "No video name provided" });
       }
-      console.log("Thumbnail generation complete:", thumbOutput);
-    return res.status(200).json({
-      message: "Thumbnail generated successfully",
-      output: thumbOutput.trim()
+
+      const videoPath = path.join(process.env.VIDEOS_DIRECTORY, `${videoName}.mp4`);
+      if (!fs.existsSync(videoPath)) {
+        return res.status(404).json({ error: "Video not found" });
+      }
+      const jarPath = process.env.JAR_PATH;
+      const thumbCommand = `java --enable-native-access=ALL-UNNAMED --module-path "../javafx-sdk-25.0.1/lib" --add-modules javafx.controls,javafx.fxml,javafx.media -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
+      exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
+        if (thumbError) {
+          console.warn("Thumbnail generation failed", thumbStderr);
+          return res.status(500).json({ error: "Thumbnail generation failed" });
+        }
+        console.log("Thumbnail generation complete:", thumbOutput);
+      return res.status(200).json({
+        message: "Thumbnail generated successfully",
+        output: thumbOutput.trim()
+        });
       });
-    });
-    // run the binarizer
-  },
+    },
 
   // POST /process/:videoName
   // Starts processing in a detached background Java process and immediately
@@ -65,15 +78,11 @@ processVideo(req, res) {
     if (!videoName) {
       return res.status(400).json({ error: "No video name provided" });
     }
-
-    //const videoPath = path.join("..", "processor", "src", "main", "resources", `${videoName}.mp4`);
     if (!fs.existsSync(videoPath)) {
       return res.status(404).json({ error: "Video not found" });
     }
     const jarPath = process.env.JAR_PATH;
     const outputCsv = path.join(process.env.RESULTS_DIRECTORY, `${videoName}.csv`);
-    //const jarPath = path.join("..", "processor", "target", "centroid-finder-1.0-SNAPSHOT.jar");
-    //const outputCsv = path.join("..", "output", `${videoName}.csv`);
     const targetColor = color;
     const thr = threshold
 
@@ -112,6 +121,13 @@ processVideo(req, res) {
 
     
   // GET /api/status/:jobId
+  // recieves a jobID through a parameter, and returns the status of the job.
+  // It does this by following the path of the status, then depending on the state of the CSV,
+  // outputs a status.
+  // If there is a CSV, then there is a complete job.
+  // If there is no CSV, then it handles checking for if it ever began or recieved an error.
+  // Eventually, if all fails, the assumption is that a job never began.
+  // NOTE: Rework path to not be static.
   getStatus(req, res) {
     const { jobId } = req.params;
     console.log(`[getStatus] Received jobId: "${jobId}" (type: ${typeof jobId})`);
