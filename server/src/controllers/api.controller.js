@@ -1,6 +1,17 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { exec, spawn } from "child_process";
+
+//Debugging lines
+console.log("VIDEOS DIRECTORY:", process.env.VIDEOS_DIRECTORY);
+console.log("RESOLVED PROJECT_VIDEOS:", PROJECT_VIDEOS);
+console.log("CURRENT WORKING DIR:", process.cwd());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const PROJECT_VIDEOS = path.resolve(__dirname, "../../videos");
 
 export const videoController = {
 
@@ -13,7 +24,7 @@ export const videoController = {
     // handle mp4. 
     getAllVideos(req, res) {
     try {
-        const videosPath = process.env.VIDEOS_DIRECTORY;
+        const videosPath = process.env.VIDEOS_DIRECTORY || PROJECT_VIDEOS;
         console.log(`[getAllVideos] VIDEOS_DIRECTORY: "${videosPath}"`);
         console.log(`[getAllVideos] Directory exists: ${fs.existsSync(videosPath)}`);
         
