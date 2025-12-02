@@ -3,15 +3,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { exec, spawn } from "child_process";
 
-//Debugging lines
-console.log("VIDEOS DIRECTORY:", process.env.VIDEOS_DIRECTORY);
-console.log("RESOLVED PROJECT_VIDEOS:", PROJECT_VIDEOS);
-console.log("CURRENT WORKING DIR:", process.cwd());
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PROJECT_VIDEOS = path.resolve(__dirname, "../../videos");
+const PROJECT_VIDEOS = "/videos";
+
+//Debugging lines
+console.log("VIDEOS DIRECTORY:", process.env.VIDEOS_DIR);
+console.log("RESOLVED PROJECT_VIDEOS:", PROJECT_VIDEOS);
+console.log("CURRENT WORKING DIR:", process.cwd());
 
 export const videoController = {
 
@@ -24,9 +24,10 @@ export const videoController = {
     // handle mp4. 
     getAllVideos(req, res) {
     try {
-        const videosPath = process.env.VIDEOS_DIRECTORY || PROJECT_VIDEOS;
-        console.log(`[getAllVideos] VIDEOS_DIRECTORY: "${videosPath}"`);
-        console.log(`[getAllVideos] Directory exists: ${fs.existsSync(videosPath)}`);
+        const videosPath = process.env.VIDEOS_DIR || PROJECT_VIDEOS;
+        console.log("[getAllVideos] Using videos path:", videosPath);
+        // console.log(`[getAllVideos] VIDEOS_DIRECTORY: "${videosPath}"`);
+        // console.log(`[getAllVideos] Directory exists: ${fs.existsSync(videosPath)}`);
         
         if (!fs.existsSync(videosPath)) {
             return res.status(404).json({ error: "Videos directory not found", path: videosPath });
@@ -60,7 +61,7 @@ export const videoController = {
         return res.status(404).json({ error: "No video name provided" });
       }
 
-      const videoPath = path.join(process.env.VIDEOS_DIRECTORY, `${videoName}.mp4`);
+      const videoPath = path.join(process.env.VIDEOS_DIR || PROJECT_VIDEOS, `${videoName}.mp4`);
       if (!fs.existsSync(videoPath)) {
         return res.status(404).json({ error: "Video not found" });
       }
@@ -93,7 +94,7 @@ export const videoController = {
       return res.status(404).json({ error: "Video not found" });
     }
     const jarPath = process.env.JAR_PATH;
-    const outputCsv = path.join(process.env.RESULTS_DIRECTORY, `${videoName}.csv`);
+    const outputCsv = path.join(process.env.RESULTS_DIR, `${videoName}.csv`);
     const targetColor = color;
     const thr = threshold
 
