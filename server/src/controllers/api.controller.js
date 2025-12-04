@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 const PROJECT_VIDEOS = "/videos";
 
 //Debugging lines
-console.log("VIDEOS DIRECTORY:", process.env.VIDEOS_DIR);
+console.log("VIDEOS DIRECTORY:", process.env.VIDEOS_DIRECTORY);
 console.log("RESOLVED PROJECT_VIDEOS:", PROJECT_VIDEOS);
 console.log("CURRENT WORKING DIR:", process.cwd());
 
@@ -24,10 +24,8 @@ export const videoController = {
     // handle mp4. 
     getAllVideos(req, res) {
     try {
-        const videosPath = process.env.VIDEOS_DIR || PROJECT_VIDEOS;
+        const videosPath = process.env.VIDEOS_DIRECTORY || PROJECT_VIDEOS;
         console.log("[getAllVideos] Using videos path:", videosPath);
-        // console.log(`[getAllVideos] VIDEOS_DIRECTORY: "${videosPath}"`);
-        // console.log(`[getAllVideos] Directory exists: ${fs.existsSync(videosPath)}`);
         
         if (!fs.existsSync(videosPath)) {
             return res.status(404).json({ error: "Videos directory not found", path: videosPath });
@@ -61,22 +59,37 @@ export const videoController = {
         return res.status(404).json({ error: "No video name provided" });
       }
 
-      const videoPath = path.join(process.env.VIDEOS_DIR || PROJECT_VIDEOS, `${videoName}.mp4`);
+      const videoPath = path.join(process.env.VIDEOS_DIRECTORY || PROJECT_VIDEOS, `${videoName}.mp4`);
       if (!fs.existsSync(videoPath)) {
         return res.status(404).json({ error: "Video not found" });
       }
       const jarPath = process.env.JAR_PATH;
-      const thumbCommand = `java --enable-native-access=ALL-UNNAMED --module-path "../javafx-sdk-25.0.1/lib" --add-modules javafx.controls,javafx.fxml,javafx.media -cp "${jarPath}" io.jessechum.centroidfinder.ThumbNailGenerator "${videoPath}"`;
+      const outputDir = path.join(process.cwd(), "output");
+      const thumbnailPath = path.join(outputDir, `${videoName}.png`);
+      
+      const thumbCommand = `java -cp "${jarPath}" io.JesseChum.centroidfinder.SimpleThumbnailGenerator "${videoPath}"`;
+      console.log("[processVideo] Executing command:", thumbCommand);
       exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
         if (thumbError) {
-          console.warn("Thumbnail generation failed", thumbStderr);
-          return res.status(500).json({ error: "Thumbnail generation failed" });
+          console.error("[processVideo] Thumbnail generation failed");
+          console.error("[processVideo] Error:", thumbError.message);
+          console.error("[processVideo] Stderr:", thumbStderr);
+          console.error("[processVideo] Stdout:", thumbOutput);
+          return res.status(500).json({ 
+            error: "Thumbnail generation failed", 
+            details: thumbStderr || thumbError.message 
+          });
         }
-        console.log("Thumbnail generation complete:", thumbOutput);
-      return res.status(200).json({
-        message: "Thumbnail generated successfully",
-        output: thumbOutput.trim()
-        });
+        console.log("[processVideo] Thumbnail generation complete:", thumbOutput);
+        
+        // Check if thumbnail was created
+        if (!fs.existsSync(thumbnailPath)) {
+          return res.status(500).json({ error: "Thumbnail file not found after generation" });
+        }
+        
+        // Send the PNG file
+        res.setHeader("Content-Type", "image/png");
+        res.sendFile(thumbnailPath);
       });
     },
 
@@ -90,11 +103,12 @@ export const videoController = {
     if (!videoName) {
       return res.status(400).json({ error: "No video name provided" });
     }
+    const videoPath = path.join(process.env.VIDEOS_DIRECTORY || PROJECT_VIDEOS, `${videoName}.mp4`);
     if (!fs.existsSync(videoPath)) {
       return res.status(404).json({ error: "Video not found" });
     }
     const jarPath = process.env.JAR_PATH;
-    const outputCsv = path.join(process.env.RESULTS_DIR, `${videoName}.csv`);
+    const outputCsv = path.join(process.env.RESULTS_DIRECTORY || "/results", `${videoName}.csv`);
     const targetColor = color;
     const thr = threshold
 

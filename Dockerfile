@@ -38,8 +38,8 @@ FROM eclipse-temurin:24-jre-alpine
 # FIX for Alpine SSL issues: switch HTTPS → HTTP
 RUN sed -i 's/https/http/' /etc/apk/repositories
 
-# Install node and npm
-RUN apk update && apk add --no-cache nodejs npm openssl
+# Install node, npm, and ffmpeg for thumbnail generation
+RUN apk update && apk add --no-cache nodejs npm openssl ffmpeg
 
 # non-root user for runtime
 RUN addgroup -S app && adduser -S -G app app
