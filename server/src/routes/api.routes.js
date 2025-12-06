@@ -14,6 +14,6 @@ apiRouter.post("/process/:videoName", videoController.startProcess);
 //original 
 // apiRouter.post("/process/:jobId/status", videoController.getStatus);
 //changed
-apiRouter.get("/status/:jobId", videoController.getStatus);
+apiRouter.get("/status", videoController.getStatus);
 
 
