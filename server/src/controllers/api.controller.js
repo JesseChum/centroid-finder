@@ -143,13 +143,8 @@ export const videoController = {
   try {
     const resultsPath = process.env.RESULTS_DIR || "/results";
 
-    // If folder doesn't exist — return empty array
-    if (!fs.existsSync(resultsPath)) {
-      console.log("Results folder not found:", resultsPath);
-      return res.status(200).json([]); 
-    }
-
     const files = fs.readdirSync(resultsPath);
+
     const csvFiles = files.filter(f => f.endsWith(".csv"));
 
     const results = csvFiles.map(filename => {
@@ -159,7 +154,6 @@ export const videoController = {
       return {
         name: filename.replace(".csv", ""),
         csv: raw.split("\n").filter(line => line.trim() !== ""),
-        done: true
       };
     });
 
@@ -167,7 +161,7 @@ export const videoController = {
 
   } catch (error) {
     console.error("Error loading CSV results:", error);
-    return res.status(200).json([]); // still return array
+    return res.status(200).json([{error: error.message}]);
   }
 }
 
