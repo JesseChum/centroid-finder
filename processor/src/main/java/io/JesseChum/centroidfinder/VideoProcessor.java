@@ -1,5 +1,7 @@
  package io.JesseChum.centroidfinder;
 
+import java.io.IOException;
+
 public class VideoProcessor {
     private final String inputPath;
     private final String outputCsv;
@@ -12,9 +14,16 @@ public class VideoProcessor {
         this.targetColor = targetColor;
         this.threshold = threshold;
     }
-    public void process(){
-        JavaFXVideoRunner runner = new JavaFXVideoRunner(inputPath, outputCsv, targetColor, threshold);
-        runner.startProcessing();
+    
+    public void process() {
+        try {
+            FFmpegVideoProcessor processor = new FFmpegVideoProcessor(inputPath, outputCsv, targetColor, threshold);
+            processor.process();
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Error processing video: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }
 
