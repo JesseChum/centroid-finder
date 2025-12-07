@@ -8,11 +8,6 @@ const __dirname = path.dirname(__filename);
 
 const PROJECT_VIDEOS = "/videos";
 
-//Debugging lines
-console.log("VIDEOS DIRECTORY:", process.env.VIDEOS_DIRECTORY);
-console.log("RESOLVED PROJECT_VIDEOS:", PROJECT_VIDEOS);
-console.log("CURRENT WORKING DIR:", process.cwd());
-
 export const videoController = {
 
     // Get All Videos is used by the API
@@ -25,20 +20,16 @@ export const videoController = {
     getAllVideos(req, res) {
     try {
         const videosPath = process.env.VIDEOS_DIRECTORY || PROJECT_VIDEOS;
-        console.log("[getAllVideos] Using videos path:", videosPath);
         
         if (!fs.existsSync(videosPath)) {
             return res.status(404).json({ error: "Videos directory not found", path: videosPath });
         }
         
         const files = fs.readdirSync(videosPath);
-        console.log(`[getAllVideos] All files found:`, files);
-        
         const videoNames = files
         .filter(f => f.endsWith(".mp4"))
         .map(f => f.replace(".mp4", ""));
 
-        console.log(`[getAllVideos] Filtered .mp4 files:`, videoNames);
         return res.status(200).json(videoNames);
     } catch (err) {
         console.error(`[getAllVideos] Error:`, err);
@@ -68,19 +59,14 @@ export const videoController = {
       const thumbnailPath = path.join(outputDir, `${videoName}.png`);
       
       const thumbCommand = `java -cp "${jarPath}" io.JesseChum.centroidfinder.SimpleThumbnailGenerator "${videoPath}"`;
-      console.log("[processVideo] Executing command:", thumbCommand);
       exec(thumbCommand, (thumbError, thumbOutput, thumbStderr) => {
         if (thumbError) {
-          console.error("[processVideo] Thumbnail generation failed");
-          console.error("[processVideo] Error:", thumbError.message);
-          console.error("[processVideo] Stderr:", thumbStderr);
-          console.error("[processVideo] Stdout:", thumbOutput);
+          console.error("Thumbnail generation failed:", thumbStderr || thumbError.message);
           return res.status(500).json({ 
             error: "Thumbnail generation failed", 
             details: thumbStderr || thumbError.message 
           });
         }
-        console.log("[processVideo] Thumbnail generation complete:", thumbOutput);
         
         // Check if thumbnail was created
         if (!fs.existsSync(thumbnailPath)) {
@@ -108,20 +94,45 @@ export const videoController = {
       return res.status(404).json({ error: "Video not found" });
     }
     const jarPath = process.env.JAR_PATH;
-    const outputCsv = path.join(process.env.RESULTS_DIRECTORY || "/results", `${videoName}.csv`);
+    const resultsDir = process.env.RESULTS_DIRECTORY || "/results";
+    
+    // Create results directory if it doesn't exist
+    if (!fs.existsSync(resultsDir)) {
+      fs.mkdirSync(resultsDir, { recursive: true });
+    }
+    
+    const outputCsv = path.join(resultsDir, `${videoName}.csv`);
     const targetColor = color;
     const thr = threshold
 
     const jobId = `${videoName}-${Date.now()}`;
 
+    console.log(`Starting job ${jobId}: ${videoName}`);
+
     // Build java args and spawn detached process so we return immediately.
-    const args = ["-cp", jarPath, "io.jessechum.centroidfinder.VideoApp", videoPath, outputCsv, targetColor, thr];
+    const args = ["-cp", jarPath, "io.JesseChum.centroidfinder.VideoApp", videoPath, outputCsv, targetColor, thr];
+    
     try {
-      const child = spawn("java", args, { detached: true, stdio: "ignore" });
+      const child = spawn("java", args, { 
+        detached: true, 
+        stdio: "ignore"
+      });
+      
+      child.on("error", (error) => {
+        console.error(`Job ${jobId} spawn error:`, error.message);
+      });
+      
       child.unref();
 
        try {
-        const statusFile = path.join("src", "processed", "status.json");
+        const statusDir = path.join("src", "processed");
+        const statusFile = path.join(statusDir, "status.json");
+        
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(statusDir)) {
+          fs.mkdirSync(statusDir, { recursive: true });
+        }
+        
         let statuses = [];
         if (fs.existsSync(statusFile)) {
           const raw = fs.readFileSync(statusFile, "utf8");
@@ -136,8 +147,9 @@ export const videoController = {
         statuses.push(entry);
         fs.writeFileSync(statusFile, JSON.stringify(statuses, null, 2), "utf8");
       } catch (e) {
-        console.error("Failed to write status entry:", e);
+        console.error("Failed to write status:", e.message);
       }
+      
       return res.status(202).json({ jobId });
     } catch (err) {
       console.error("Failed to start processing job:", err);
