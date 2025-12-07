@@ -121,7 +121,7 @@ export const videoController = {
       child.unref();
 
        try {
-        const statusFile = path.join("src", "processed", "status.json");
+        const statusFile = path.join("/app/data", "status.json");
         let statuses = [];
         if (fs.existsSync(statusFile)) {
           const raw = fs.readFileSync(statusFile, "utf8");
