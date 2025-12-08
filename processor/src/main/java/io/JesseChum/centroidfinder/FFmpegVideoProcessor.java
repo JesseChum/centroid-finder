@@ -94,6 +94,7 @@ public class FFmpegVideoProcessor {
         ColorDistanceFinder distanceFinder = new EuclideanColorDistance();
         ImageBinarizer binarizer = new DistanceImageBinarizer(distanceFinder, targetColor, threshold);
         BinaryGroupFinder groupFinder = new DfsBinaryGroupFinder();
+        
         BinarizingImageGroupFinder centroidFinder = new BinarizingImageGroupFinder(binarizer, groupFinder);
 
         // Get all frame files
@@ -129,10 +130,26 @@ public class FFmpegVideoProcessor {
                 // Find centroids in this frame
                 List<Group> groups = centroidFinder.findConnectedGroups(image);
 
-                // Write centroids to CSV
-                for (Group group : groups) {
-                    Coordinate centroid = group.centroid();
-                    writer.write(String.format("%.3f,%d,%d%n", currentTime, centroid.x(), centroid.y()));
+                // Only process the largest group (biggest area)
+                 if (!groups.isEmpty()) {
+                    Group largest = null;
+                    int maxSize = 0;
+
+                    for (Group g : groups) {
+                        int size = g.size();
+                        if (size > maxSize) {
+                            maxSize = size;
+                            largest = g;
+                        }
+                    }
+
+                    if (largest != null) {
+                        Coordinate centroid = largest.centroid();
+                        writer.write(String.format("%.3f,%d,%d%n",
+                                currentTime,
+                                centroid.x(),
+                                centroid.y()));
+                    }
                 }
 
                 frameCount++;
@@ -141,7 +158,6 @@ public class FFmpegVideoProcessor {
             System.out.println("Processed " + frameCount + " frames -> " + outputCsv);
         }
     }
-
     private void deleteDirectory(File directory) {
         File[] files = directory.listFiles();
         if (files != null) {
