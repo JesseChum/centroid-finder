@@ -16,4 +16,5 @@ apiRouter.post("/process/:videoName", videoController.startProcess);
 //changed
 apiRouter.get("/status", videoController.getStatus);
 
-
+//Delete the csv
+apiRouter.delete("/results/:name", videoController.deleteResult);

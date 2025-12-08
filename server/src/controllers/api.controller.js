@@ -189,6 +189,36 @@ export const videoController = {
     console.error("Error loading CSV results:", error);
     return res.status(200).json([{error: error.message}]);
   }
-}
+},
 
+  //Delete csv output
+  deleteResult(req, res) {
+  try {
+    // 1. Get `name` from route param /results/:name
+    const { name } = req.params;
+    console.log("[deleteResult] got param name:", name);
+
+    if (!name) {
+      return res.status(400).json({ error: "No name provided" });
+    }
+
+    // 2. Use the same env var as the rest of your app / Dockerfile
+    const resultsPath = process.env.RESULTS_DIRECTORY || "/results";
+    const filePath = path.join(resultsPath, `${name}.csv`);
+
+    // 3. Make sure the file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "CSV file not found" });
+    }
+
+    // 4. Delete it
+    fs.unlinkSync(filePath);
+    console.log("[deleteResult] deleted:", filePath);
+
+    return res.status(200).json({ message: `Deleted ${name}.csv` });
+  } catch (err) {
+    console.error("Delete error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+}
 };
