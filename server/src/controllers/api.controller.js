@@ -125,7 +125,14 @@ export const videoController = {
       child.unref();
 
        try {
-        const statusFile = path.join("src", "processed", "status.json");
+        const statusDir = path.join("src", "processed");
+        const statusFile = path.join(statusDir, "status.json");
+        
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(statusDir)) {
+          fs.mkdirSync(statusDir, { recursive: true });
+        }
+        
         let statuses = [];
         if (fs.existsSync(statusFile)) {
           const raw = fs.readFileSync(statusFile, "utf8");
