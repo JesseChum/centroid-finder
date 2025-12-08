@@ -115,11 +115,23 @@ export const videoController = {
     try {
       const child = spawn("java", args, { 
         detached: true, 
-        stdio: "ignore"
+        stdio: ["ignore", "pipe", "pipe"]
+      });
+      
+      child.stdout.on("data", (data) => {
+        console.log(`[${jobId}]:`, data.toString().trim());
+      });
+      
+      child.stderr.on("data", (data) => {
+        console.error(`[${jobId} ERROR]:`, data.toString().trim());
       });
       
       child.on("error", (error) => {
         console.error(`Job ${jobId} spawn error:`, error.message);
+      });
+      
+      child.on("exit", (code) => {
+        console.log(`Job ${jobId} exited with code ${code}`);
       });
       
       child.unref();

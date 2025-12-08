@@ -108,6 +108,7 @@ public class FFmpegVideoProcessor {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputCsv))) {
             writer.write("time_seconds,x,y\n");
+            writer.flush();
 
             double step = 1.0 / FRAME_RATE;
             int frameCount = 0;
@@ -115,46 +116,33 @@ public class FFmpegVideoProcessor {
             for (File frameFile : frameFiles) {
                 double currentTime = frameCount * step;
 
-                // Don't process frames beyond video duration
                 if (currentTime > duration) {
                     break;
                 }
 
-                // Read frame as BufferedImage
                 BufferedImage image = ImageIO.read(frameFile);
                 if (image == null) {
-                    System.err.println("Warning: Could not read frame " + frameFile.getName());
                     continue;
                 }
 
-                // Find centroids in this frame
                 List<Group> groups = centroidFinder.findConnectedGroups(image);
 
-                // Only process the largest group (biggest area)
-                 if (!groups.isEmpty()) {
-                    Group largest = null;
-                    int maxSize = 0;
-
-                    for (Group g : groups) {
-                        int size = g.size();
-                        if (size > maxSize) {
-                            maxSize = size;
-                            largest = g;
-                        }
-                    }
-
-                    if (largest != null) {
-                        Coordinate centroid = largest.centroid();
-                        writer.write(String.format("%.3f,%d,%d%n",
-                                currentTime,
-                                centroid.x(),
-                                centroid.y()));
-                    }
+                if (groups.isEmpty()) {
+                    writer.write(String.format("%.2f,%.2f,%.2f%n", currentTime, -1.0, -1.0));
+                } else {
+                    Group largest = groups.get(groups.size() - 1);
+                    Coordinate centroid = largest.centroid();
+                    writer.write(String.format("%.2f,%.2f,%.2f%n", currentTime, (double)centroid.x(), (double)centroid.y()));
+                }
+                
+                if (frameCount % 30 == 0) {
+                    writer.flush();
                 }
 
                 frameCount++;
             }
-
+            
+            writer.flush();
             System.out.println("Processed " + frameCount + " frames -> " + outputCsv);
         }
     }
